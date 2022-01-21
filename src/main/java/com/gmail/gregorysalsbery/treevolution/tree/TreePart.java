@@ -33,7 +33,7 @@ public abstract class TreePart {
         if(visible) {
             g.setColor(color);
 //            g.drawRect(gridX * Config.cell_size, gridY * Config.cell_size, Config.cell_size, Config.cell_size);
-            g.fillRect(gridX * Config.cell_size, gridY * Config.cell_size, Config.cell_size, Config.cell_size);
+            g.fillRect(gridX * Config.CELL_SIZE, gridY * Config.CELL_SIZE, Config.CELL_SIZE, Config.CELL_SIZE);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.gmail.gregorysalsbery.treevolution.app;
 
+import com.gmail.gregorysalsbery.treevolution.environment.Dirt;
 import com.gmail.gregorysalsbery.treevolution.tree.Tree;
 
 import javax.swing.*;
@@ -24,6 +25,7 @@ public class Board extends JPanel implements ActionListener {
 //        private Generation generation;
 
     private List<Tree> trees;
+    private List<Dirt> dirts;
 
     private long prevTime;
 
@@ -37,8 +39,10 @@ public class Board extends JPanel implements ActionListener {
 //            foods = populateFood(400);
 //            generation = new Generation(120);
 
+        dirts = createGround(10);
+
         trees = new ArrayList<Tree>();
-        trees.add(new Tree(10, 10));
+        trees.add(new Tree(10, Config.GRID_SIZE_Y-10-1));
 
         // this timer will call the actionPerformed() method every DELAY ms
         timer = new Timer(DELAY, this);
@@ -100,12 +104,30 @@ public class Board extends JPanel implements ActionListener {
 //
 //            generation.draw(g);
 
+        for(Dirt dirt : dirts) {
+            dirt.draw(g);
+        }
+
         for(Tree tree : trees) {
             tree.draw(g);
         }
 
+
+
         // this smooths out animations on some systems
         Toolkit.getDefaultToolkit().sync();
+    }
+
+    private List<Dirt> createGround(int depth) {
+        List<Dirt> dirtList = new ArrayList<Dirt>();
+
+        for(int j=0; j<depth; j++) {
+            for (int i=0; i<Config.GRID_SIZE_X; i++) {
+                dirtList.add(new Dirt(i, Config.GRID_SIZE_Y - j - 1));
+            }
+        }
+
+        return dirtList;
     }
 
 //        private void drawBackground(Graphics g) {
