@@ -1,9 +1,13 @@
 package com.gmail.gregorysalsbery.treevolution.app;
 
+import com.gmail.gregorysalsbery.treevolution.tree.Tree;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Board extends JPanel implements ActionListener {
 
@@ -19,6 +23,8 @@ public class Board extends JPanel implements ActionListener {
 //        private ArrayList<Food> foods;
 //        private Generation generation;
 
+    private List<Tree> trees;
+
     private long prevTime;
 
     public Board() {
@@ -30,6 +36,9 @@ public class Board extends JPanel implements ActionListener {
 //            // initialize the game state
 //            foods = populateFood(400);
 //            generation = new Generation(120);
+
+        trees = new ArrayList<Tree>();
+        trees.add(new Tree(10, 10));
 
         // this timer will call the actionPerformed() method every DELAY ms
         timer = new Timer(DELAY, this);
@@ -90,6 +99,10 @@ public class Board extends JPanel implements ActionListener {
 //            }
 //
 //            generation.draw(g);
+
+        for(Tree tree : trees) {
+            tree.draw(g);
+        }
 
         // this smooths out animations on some systems
         Toolkit.getDefaultToolkit().sync();

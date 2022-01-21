@@ -32,7 +32,8 @@ public abstract class TreePart {
     public void draw(Graphics g) {
         if(visible) {
             g.setColor(color);
-            g.drawRect(gridX * Config.cell_size, gridY * Config.cell_size, Config.cell_size, Config.cell_size);
+//            g.drawRect(gridX * Config.cell_size, gridY * Config.cell_size, Config.cell_size, Config.cell_size);
+            g.fillRect(gridX * Config.cell_size, gridY * Config.cell_size, Config.cell_size, Config.cell_size);
         }
     }
 }
