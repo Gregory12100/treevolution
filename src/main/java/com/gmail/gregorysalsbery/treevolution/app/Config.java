@@ -9,5 +9,5 @@ public class Config {
     public static final int SCREEN_SIZE_X = 1600;
     public static final int SCREEN_SIZE_Y = 800;
 
-    public static final int cell_size = 10;
+    public static final int cell_size = 5;
 }
