@@ -1,5 +1,6 @@
 package com.gmail.gregorysalsbery.treevolution.tree;
 
+import com.gmail.gregorysalsbery.treevolution.app.grid.GridPoint;
 import com.gmail.gregorysalsbery.treevolution.tree.parts.Leaf;
 import com.gmail.gregorysalsbery.treevolution.tree.parts.Seed;
 import com.gmail.gregorysalsbery.treevolution.tree.parts.TreePart;
@@ -15,19 +16,16 @@ public class Tree {
     private int water;
     private int food;
 
-    private int startGridX;
-    private int startGridY;
+    private GridPoint xy;
 
     private Seed seed;
 
     List<TreePart> treeParts;
 
-    public Tree(int startGridX, int startGridY) {
-        this.startGridX = startGridX;
-        this.startGridY = startGridY;
+    public Tree(int seedX, int seedY) {
+        this.xy = new GridPoint(seedX, seedY);
 
-        this.seed = new Seed(this, startGridX, startGridY);
-
+        this.seed = new Seed(this, seedX, seedY);
         this.treeParts = new ArrayList<TreePart>();
         this.treeParts.add(this.seed);
     }
@@ -40,16 +38,16 @@ public class Tree {
 
     public void sprout() {
         treeParts.remove(seed);
-        treeParts.add(new TrunkPart(this, startGridX, startGridY+1));
-        treeParts.add(new TrunkPart(this, startGridX, startGridY+2));
-        treeParts.add(new Leaf(this, startGridX, startGridY+3));
+        treeParts.add(new TrunkPart(this, xy.getX(), xy.getY()+1));
+        treeParts.add(new TrunkPart(this, xy.getX(), xy.getY()+2));
+        treeParts.add(new Leaf(this, xy.getX(), xy.getY()+3));
     }
 
     public void growHigher() {
         for(TreePart treePart : treeParts) {
-            treePart.goUpOneSpace();
+            treePart.moveUp();
         }
-        treeParts.add(new TrunkPart(this, startGridX, startGridY+1));
+        treeParts.add(new TrunkPart(this, xy.getX(), xy.getY()+1));
     }
 
 

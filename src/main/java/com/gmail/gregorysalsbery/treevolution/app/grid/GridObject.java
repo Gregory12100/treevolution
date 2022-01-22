@@ -1,6 +1,7 @@
 package com.gmail.gregorysalsbery.treevolution.app.grid;
 
 import com.gmail.gregorysalsbery.treevolution.app.util.Config;
+import com.gmail.gregorysalsbery.treevolution.app.util.Util;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,8 +25,15 @@ public abstract class GridObject {
     public void draw(Graphics g) {
         if(visible) {
             g.setColor(color);
-            ScreenPoint screenPoint = xy.getScreenPoint();
-            g.fillRect((int) screenPoint.getX(), (int) screenPoint.getY(), Config.CELL_SIZE, Config.CELL_SIZE);
+            g.fillRect(Util.gridXToScreenX(xy.getX()), Util.gridYToScreenY(xy.getY()), Config.CELL_SIZE, Config.CELL_SIZE);
         }
+    }
+
+    public void translate(int dx, int dy) {
+        xy.translate(dx, dy);
+    }
+
+    public void moveUp() {
+        xy.moveUp();
     }
 }

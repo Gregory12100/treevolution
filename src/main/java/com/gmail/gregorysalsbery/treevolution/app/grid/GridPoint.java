@@ -19,7 +19,7 @@ public class GridPoint {
         y += dy;
     }
 
-    public ScreenPoint getScreenPoint() {
-        return new ScreenPoint(x * Config.CELL_SIZE, Config.SCREEN_SIZE_Y - (y+1) * Config.CELL_SIZE);
+    public void moveUp() {
+        translate(0, 1);
     }
 }

@@ -19,8 +19,4 @@ public abstract class TreePart extends GridObject {
         this.type = type;
         this.health = health;
     }
-
-    public void goUpOneSpace() {
-        getXy().translate(0, 1);
-    }
 }
