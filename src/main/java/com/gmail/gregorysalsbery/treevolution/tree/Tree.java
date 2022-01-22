@@ -1,6 +1,6 @@
 package com.gmail.gregorysalsbery.treevolution.tree;
 
-import com.gmail.gregorysalsbery.treevolution.app.grid.GridPoint;
+import com.gmail.gregorysalsbery.treevolution.grid.GridPoint;
 import com.gmail.gregorysalsbery.treevolution.tree.parts.Leaf;
 import com.gmail.gregorysalsbery.treevolution.tree.parts.Seed;
 import com.gmail.gregorysalsbery.treevolution.tree.parts.TreePart;

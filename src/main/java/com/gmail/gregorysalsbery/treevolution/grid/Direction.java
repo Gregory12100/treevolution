@@ -1,4 +1,4 @@
-package com.gmail.gregorysalsbery.treevolution.app.grid;
+package com.gmail.gregorysalsbery.treevolution.grid;
 
 public enum Direction {
     UP,

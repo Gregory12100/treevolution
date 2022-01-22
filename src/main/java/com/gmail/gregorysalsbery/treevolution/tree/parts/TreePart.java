@@ -1,6 +1,6 @@
 package com.gmail.gregorysalsbery.treevolution.tree.parts;
 
-import com.gmail.gregorysalsbery.treevolution.app.grid.GridObject;
+import com.gmail.gregorysalsbery.treevolution.grid.GridObject;
 import com.gmail.gregorysalsbery.treevolution.tree.Tree;
 
 import java.awt.*;

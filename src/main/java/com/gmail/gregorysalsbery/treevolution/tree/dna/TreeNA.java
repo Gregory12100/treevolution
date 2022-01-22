@@ -1,6 +1,6 @@
 package com.gmail.gregorysalsbery.treevolution.tree.dna;
 
-import com.gmail.gregorysalsbery.treevolution.app.util.Util;
+import com.gmail.gregorysalsbery.treevolution.util.Util;
 
 import java.io.FileNotFoundException;
 import java.util.List;

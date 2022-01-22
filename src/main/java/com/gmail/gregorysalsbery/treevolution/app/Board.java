@@ -1,6 +1,6 @@
 package com.gmail.gregorysalsbery.treevolution.app;
 
-import com.gmail.gregorysalsbery.treevolution.app.util.Config;
+import com.gmail.gregorysalsbery.treevolution.util.Config;
 import com.gmail.gregorysalsbery.treevolution.environment.Dirt;
 import com.gmail.gregorysalsbery.treevolution.tree.Tree;
 

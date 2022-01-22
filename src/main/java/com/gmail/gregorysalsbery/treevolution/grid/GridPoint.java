@@ -1,6 +1,5 @@
-package com.gmail.gregorysalsbery.treevolution.app.grid;
+package com.gmail.gregorysalsbery.treevolution.grid;
 
-import com.gmail.gregorysalsbery.treevolution.app.util.Config;
 import lombok.Getter;
 
 @Getter

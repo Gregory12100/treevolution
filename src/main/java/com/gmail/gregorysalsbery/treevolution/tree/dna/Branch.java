@@ -1,6 +1,6 @@
 package com.gmail.gregorysalsbery.treevolution.tree.dna;
 
-import com.gmail.gregorysalsbery.treevolution.app.grid.Direction;
+import com.gmail.gregorysalsbery.treevolution.grid.Direction;
 
 import java.util.List;
 
