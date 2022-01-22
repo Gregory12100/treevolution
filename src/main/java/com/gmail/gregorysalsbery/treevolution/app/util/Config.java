@@ -1,4 +1,4 @@
-package com.gmail.gregorysalsbery.treevolution.app;
+package com.gmail.gregorysalsbery.treevolution.app.util;
 
 import java.awt.*;
 

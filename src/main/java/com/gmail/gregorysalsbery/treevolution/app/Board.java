@@ -1,5 +1,6 @@
 package com.gmail.gregorysalsbery.treevolution.app;
 
+import com.gmail.gregorysalsbery.treevolution.app.util.Config;
 import com.gmail.gregorysalsbery.treevolution.environment.Dirt;
 import com.gmail.gregorysalsbery.treevolution.tree.Tree;
 
@@ -13,7 +14,7 @@ import java.util.List;
 public class Board extends JPanel implements ActionListener {
 
     // controls the delay between each tick in ms
-    private final int DELAY = 17;
+    private final int DELAY = 1000;
     // suppress serialization warning
     private static final long serialVersionUID = 490905409104883233L;
 
@@ -42,7 +43,10 @@ public class Board extends JPanel implements ActionListener {
         dirts = createGround(10);
 
         trees = new ArrayList<Tree>();
-        trees.add(new Tree(10, Config.GRID_SIZE_Y-10-1));
+        trees.add(new Tree(100, 9));
+        for(Tree tree : trees) {
+            tree.sprout();
+        }
 
         // this timer will call the actionPerformed() method every DELAY ms
         timer = new Timer(DELAY, this);
@@ -86,6 +90,10 @@ public class Board extends JPanel implements ActionListener {
 //                }
 //            }
 
+        for(Tree tree : trees) {
+            tree.growHigher();
+        }
+
         // calling repaint() will trigger paintComponent() to run again,
         // which will refresh/redraw the graphics.
         repaint();
@@ -123,7 +131,7 @@ public class Board extends JPanel implements ActionListener {
 
         for(int j=0; j<depth; j++) {
             for (int i=0; i<Config.GRID_SIZE_X; i++) {
-                dirtList.add(new Dirt(i, Config.GRID_SIZE_Y - j - 1));
+                dirtList.add(new Dirt(i, j));
             }
         }
 

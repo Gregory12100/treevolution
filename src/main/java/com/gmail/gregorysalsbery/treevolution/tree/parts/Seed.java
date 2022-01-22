@@ -1,4 +1,6 @@
-package com.gmail.gregorysalsbery.treevolution.tree;
+package com.gmail.gregorysalsbery.treevolution.tree.parts;
+
+import com.gmail.gregorysalsbery.treevolution.tree.Tree;
 
 import java.awt.*;
 

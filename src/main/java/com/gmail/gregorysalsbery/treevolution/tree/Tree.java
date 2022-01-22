@@ -1,5 +1,10 @@
 package com.gmail.gregorysalsbery.treevolution.tree;
 
+import com.gmail.gregorysalsbery.treevolution.tree.parts.Leaf;
+import com.gmail.gregorysalsbery.treevolution.tree.parts.Seed;
+import com.gmail.gregorysalsbery.treevolution.tree.parts.TreePart;
+import com.gmail.gregorysalsbery.treevolution.tree.parts.TrunkPart;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,4 +37,20 @@ public class Tree {
             treePart.draw(g);
         }
     }
+
+    public void sprout() {
+        treeParts.remove(seed);
+        treeParts.add(new TrunkPart(this, startGridX, startGridY+1));
+        treeParts.add(new TrunkPart(this, startGridX, startGridY+2));
+        treeParts.add(new Leaf(this, startGridX, startGridY+3));
+    }
+
+    public void growHigher() {
+        for(TreePart treePart : treeParts) {
+            treePart.goUpOneSpace();
+        }
+        treeParts.add(new TrunkPart(this, startGridX, startGridY+1));
+    }
+
+
 }
