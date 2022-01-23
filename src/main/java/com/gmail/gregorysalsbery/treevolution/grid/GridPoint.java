@@ -21,4 +21,8 @@ public class GridPoint {
     public void moveUp() {
         translate(0, 1);
     }
+
+    public int getGridDistanceBetween(GridPoint other) {
+        return Math.abs(x - other.getX()) + Math.abs(y - other.getY());
+    }
 }

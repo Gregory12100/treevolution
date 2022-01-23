@@ -1,6 +1,6 @@
 package com.gmail.gregorysalsbery.treevolution.app;
 
-import com.gmail.gregorysalsbery.treevolution.tree.dna.BodyPlan;
+import com.gmail.gregorysalsbery.treevolution.tree.dna.Treenome;
 import com.gmail.gregorysalsbery.treevolution.util.Config;
 import com.gmail.gregorysalsbery.treevolution.environment.Dirt;
 import com.gmail.gregorysalsbery.treevolution.tree.Tree;
@@ -9,7 +9,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,15 +43,15 @@ public class Board extends JPanel implements ActionListener {
 
         dirts = createGround(10);
 
-        BodyPlan bodyPlan = new BodyPlan("src/main/resources/treena1.csv");
+        Treenome treenome = new Treenome("src/main/resources/treena1.csv");
 
         trees = new ArrayList<Tree>();
-        trees.add(new Tree(bodyPlan, 100, 9));
+        trees.add(new Tree(treenome, 100, 9));
 
-        for(Tree tree : trees) {
-//            tree.sprout();
-            tree.matureInstantly();
-        }
+//        for(Tree tree : trees) {
+////            tree.sprout();
+//            tree.matureInstantly();
+//        }
 
         // this timer will call the actionPerformed() method every DELAY ms
         timer = new Timer(DELAY, this);
@@ -97,7 +96,7 @@ public class Board extends JPanel implements ActionListener {
 //            }
 
         for(Tree tree : trees) {
-//            tree.growHigher();
+            tree.grow();
         }
 
         // calling repaint() will trigger paintComponent() to run again,
