@@ -20,16 +20,14 @@ public class Util {
         return Config.SCREEN_SIZE_Y - (gridY + 1) * Config.CELL_SIZE;
     }
 
-    public static List<List<String>> readCsvToList(String path) throws FileNotFoundException {
+    public static List<List<String>> readCsvToList(String path) {
         List<List<String>> records = new ArrayList<List<String>>();
         try (CSVReader csvReader = new CSVReader(new FileReader(path));) {
             String[] values = null;
             while ((values = csvReader.readNext()) != null) {
                 records.add(Arrays.asList(values));
             }
-        } catch (CsvValidationException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (CsvValidationException | IOException e) {
             e.printStackTrace();
         }
         return records;
