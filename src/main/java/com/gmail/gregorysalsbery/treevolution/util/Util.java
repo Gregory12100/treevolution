@@ -1,11 +1,10 @@
 package com.gmail.gregorysalsbery.treevolution.util;
 
 import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,5 +27,15 @@ public class Util {
                 records.add(Arrays.asList(values));
             }
         return records;
+    }
+
+    public static void writeListToCsv(String path, List<List<String>> writeList) throws IOException {
+        CSVWriter writer = new CSVWriter(new FileWriter(path));
+        for(List<String> row : writeList) {
+            String[] rowArray = new String[row.size()];
+            rowArray = row.toArray(rowArray);
+            writer.writeNext(rowArray);
+        }
+        writer.close();
     }
 }

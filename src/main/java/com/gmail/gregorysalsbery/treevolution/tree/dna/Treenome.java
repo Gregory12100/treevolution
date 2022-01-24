@@ -15,15 +15,16 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+/**
+ * Treenome, genome for trees :)
+ * Has methods to load from file and write back to a file
+ * Determines growth sequence of tree parts
+ *
+ * TODO: handle mutation
+ */
 @Getter
 @Slf4j
 public class Treenome {
-
-    // read in treena file
-    // assign a growing order to each tree part
-    // during the sim, the tree just follows the predetermined build instructions
-    // first part built is always top leaf and then works way down trunk
-    // when multiple things could be built, just choose randomly
 
     private List<TreeNA> treeNAs;
     private List<TreeNA> seeds;
@@ -36,6 +37,13 @@ public class Treenome {
 
     private int currentGrowthNumber = 0;
 
+    /**
+     * Constructor
+     * Reads in the treenome data from a file and does some checking
+     * to make sure its valid. Then determines the growth sequence.
+     *
+     * @param filepath - path of file where the treenome data is stored
+     */
     public Treenome(String filepath) {
         treeNAs = new ArrayList<TreeNA>();
         seeds = new ArrayList<TreeNA>();
@@ -51,11 +59,24 @@ public class Treenome {
             checkTreeNAIsValid();
             determineGrowthSequence();
         } catch (CsvValidationException | IOException | TreeNAInvalidException | GrowthSequenceException e) {
+            // if there are any exceptions, we just go ahead and quit
+            // TODO: better exception handling. We wouldn't have to exit the program and probably shouldn't either.
             e.printStackTrace();
             System.exit(-1);
         }
     }
 
+    /**
+     * Loads a treenome from a csv file. The file has to be in a specific format as follows:
+     *      Type X Y
+     * Where type is the first letter of the tree part type (T for Trunk, etc...)
+     * X is the x coordinate relative to the seed. Seed is at (0, 0) always
+     * Y is the y coordinate relative to the seed.
+     *
+     * @param filepath - path of the file
+     * @throws CsvValidationException - if there's some problem with the csv data
+     * @throws IOException - if there's a problem reading the file
+     */
     private void loadFromCsvFile(String filepath) throws CsvValidationException, IOException {
         List<List<String>> csvData = Util.readCsvToList(filepath);
 
@@ -93,6 +114,33 @@ public class Treenome {
         }
     }
 
+    /**
+     * Writes the treenome to a csv file
+     *
+     * @param filepath - filepath to write to
+     */
+    public void writeToFile(String filepath) {
+        List<List<String>> dataToWrite = new ArrayList<>();
+        for(TreeNA treeNA : treeNAs) {
+            List<String> treeNAAsList = new ArrayList<>();
+            treeNAAsList.add(treeNA.getTypeString());
+            treeNAAsList.add(String.valueOf(treeNA.getXy().getX()));
+            treeNAAsList.add(String.valueOf(treeNA.getXy().getY()));
+            dataToWrite.add(treeNAAsList);
+        }
+        try {
+            Util.writeListToCsv(filepath, dataToWrite);
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.error("Failed to write treenome to file");
+        }
+    }
+
+    /**
+     * Does some checks on the treenome data that is read in to verify it is a valid treenome
+     *
+     * @throws TreeNAInvalidException - if the treenome data is not valid
+     */
     private void checkTreeNAIsValid() throws TreeNAInvalidException {
         if(seeds.size() > 1) {
             throw new TreeNAInvalidException("Tree DNA contains multiple seeds!");
@@ -106,6 +154,13 @@ public class Treenome {
         }
     }
 
+    /**
+     * Determines the order in which a tree will be grown.
+     * Assigns a grow number to each part
+     * Starts with the seed with grow number 0 and increments up from there
+     *
+     * @throws GrowthSequenceException - if there was a problem determining the growth sequence for the treenome
+     */
     private void determineGrowthSequence() throws GrowthSequenceException {
         int growNumber = 0;
 
@@ -119,9 +174,9 @@ public class Treenome {
         while(possibleGrowths.size() > 0) {
             // randomly choose a next possible growth
             // TODO: allow probability weighting to different tree part types
+            // TODO: also allow weighting to different growth directions - tree prefers up instead of out
             TreeNA nextGrowth = possibleGrowths.get(rand.nextInt(possibleGrowths.size()));
             nextGrowth.setGrowNumber(growNumber);
-            log.debug("Next growth is {} at ({},{}) with grow number {}", nextGrowth.getType(), nextGrowth.getXy().getX(), nextGrowth.getXy().getY(), growNumber);
             possibleGrowths.remove(nextGrowth);
             growNumber++;
 
@@ -143,20 +198,28 @@ public class Treenome {
         // sort the list by grow number
         treeNAs.sort(Comparator.comparing(TreeNA::getGrowNumber));
 
-        log.debug("Here is the final grow sequence");
-        for(TreeNA treeNA : treeNAs) {
-            log.debug("{} - {} at ({},{})", treeNA.getGrowNumber(), treeNA.getType(), treeNA.getXy().getX(), treeNA.getXy().getY());
-        }
-        log.debug("Total sequence length: {}", treeNAs.size());
+//        log.debug("Here is the final grow sequence");
+//        for(TreeNA treeNA : treeNAs) {
+//            log.debug("{} - {} at ({},{})", treeNA.getGrowNumber(), treeNA.getType(), treeNA.getXy().getX(), treeNA.getXy().getY());
+//        }
+//        log.debug("Total sequence length: {}", treeNAs.size());
     }
 
+    /**
+     * Finds all the neighbors of a tree part (treeNA)
+     * Neighbors are other tree parts that are immediately adjacent
+     *
+     * @param treeNA - the tree part to find neighbors for
+     * @return - a list of the neighbors
+     */
     private List<TreeNA> getNeighbors(TreeNA treeNA) {
         List<TreeNA> neighbors = new ArrayList<>();
         for(TreeNA otherTreeNA: treeNAs) {
-            // check for self
+            // check for self, don't want to include self in its list of neighbors
             if(otherTreeNA == treeNA) {
                 continue;
             }
+            // determine if other is adjacent
             if(treeNA.getXy().getGridDistanceBetween(otherTreeNA.getXy()) == 1) {
                 neighbors.add(otherTreeNA);
             }
@@ -164,6 +227,20 @@ public class Treenome {
         return neighbors;
     }
 
+    /**
+     * Finds neighbors of a tree part via getNeighbors and then filters the list of neighbors down
+     * based on if that neighbor is growable from the input treeNA
+     *
+     * A neighbor is growable if it hasn't already been grown and,
+     * input treeNA is seed or,
+     * input treeNA is trunk and neighbor is trunk branch or leaf or,
+     * input treeNA is root and neighbor is root (root only grows root) or,
+     * input treeNA is branch and neighbor is branch or leaf,
+     * input treeNA is not leaf (leaf can't grow anything else from it)
+     *
+     * @param treeNA - the tree part to find neighbors for
+     * @return - a list of neighbors that are growable from the input treeNA
+     */
     private List<TreeNA> getGrowableNeighbors(TreeNA treeNA) {
         // leaf cannot grow anything, return empty list
         if(treeNA.getType() == TreePartType.LEAF) {
@@ -214,6 +291,11 @@ public class Treenome {
         return neighbors;
     }
 
+    /**
+     * Supplies the next tree part in the growth sequence
+     *
+     * @return - the next tree part that the owning tree should grow
+     */
     public TreePart getNextGrowth() {
         // will return the next tree part in the growth sequence
         if(currentGrowthNumber < treeNAs.size()) {
@@ -243,6 +325,11 @@ public class Treenome {
         return null;
     }
 
+    /**
+     * Supplies all of the tree parts for this treenome
+     *
+     * @return - a list of all tree parts for this treenome
+     */
     public List<TreePart> getAllTreeParts() {
         List<TreePart> treeParts = new ArrayList<TreePart>();
         for(TreeNA treeNA : treeNAs) {

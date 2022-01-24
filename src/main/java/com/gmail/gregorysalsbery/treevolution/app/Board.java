@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Board extends JPanel implements ActionListener {
 
@@ -29,6 +30,11 @@ public class Board extends JPanel implements ActionListener {
     private List<Tree> trees;
     private List<Dirt> dirts;
 
+    private int groundDepth = 10;
+    private int numTrees = 10;
+
+    private Random rand = new Random();
+
     private long prevTime;
 
     public Board() {
@@ -41,12 +47,13 @@ public class Board extends JPanel implements ActionListener {
 //            foods = populateFood(400);
 //            generation = new Generation(120);
 
-        dirts = createGround(10);
-
-        Treenome treenome = new Treenome("src/main/resources/treena1.csv");
+        dirts = createGround(groundDepth);
 
         trees = new ArrayList<Tree>();
-        trees.add(new Tree(treenome, 100, 9));
+        for(int i=0; i<numTrees; i++) {
+            Treenome treenome = new Treenome("src/main/resources/treena1.csv");
+            trees.add(new Tree(treenome, rand.nextInt(Config.GRID_SIZE_X), groundDepth-1));
+        }
 
 //        for(Tree tree : trees) {
 ////            tree.sprout();

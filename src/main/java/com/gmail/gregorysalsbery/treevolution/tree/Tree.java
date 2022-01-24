@@ -23,6 +23,7 @@ public class Tree {
     Treenome treenome;
     List<TreePart> treeParts;
 
+    // TODO: get current height, depth, and width in both directions of tree
 
     public Tree(Treenome treenome, int seedX, int seedY) {
         this.xy = new GridPoint(seedX, seedY);

@@ -22,4 +22,27 @@ public class TreeNA {
         this.xy = new GridPoint(x, y);
         this.type = type;
     }
+
+    public String getTypeString() {
+        switch (type) {
+            case SEED -> {
+                return "S";
+            }
+            case TRUNK -> {
+                return "T";
+            }
+            case ROOT -> {
+                return "R";
+            }
+            case BRANCH -> {
+                return "B";
+            }
+            case LEAF -> {
+                return "L";
+            }
+            default -> {
+                return null;
+            }
+        }
+    }
 }
