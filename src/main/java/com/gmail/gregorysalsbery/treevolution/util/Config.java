@@ -13,4 +13,6 @@ public class Config {
 
     public static final int GRID_SIZE_X = SCREEN_SIZE_X / CELL_SIZE;
     public static final int GRID_SIZE_Y = SCREEN_SIZE_Y / CELL_SIZE;
+
+    public static final int GROUND_DEPTH = 10;
 }

@@ -33,7 +33,7 @@ public class Treenome {
     private List<TreeNA> branches;
     private List<TreeNA> leaves;
 
-    private Random rand;
+    private Random rand = new Random();
 
     private int currentGrowthNumber = 0;
 
@@ -51,8 +51,6 @@ public class Treenome {
         roots = new ArrayList<TreeNA>();
         branches = new ArrayList<TreeNA>();
         leaves = new ArrayList<TreeNA>();
-
-        rand = new Random();
 
         try {
             loadFromCsvFile(filepath);
@@ -185,8 +183,6 @@ public class Treenome {
             // remove any duplicates
             possibleGrowths = possibleGrowths.stream().distinct().collect(Collectors.toList());
         }
-
-        log.debug("End grow number is: {}", growNumber);
 
         // make sure all parts got a grow number
         for(TreeNA treeNA : treeNAs) {
