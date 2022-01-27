@@ -14,7 +14,7 @@ import java.util.List;
 @Slf4j
 public class Tree {
 
-    private int energy;
+    private int energy = 20000;
     private int water;
     private int food;
 
@@ -29,7 +29,7 @@ public class Tree {
         this.xy = new GridPoint(seedX, seedY);
 
         this.treenome = treenome;
-        this.treeParts = new ArrayList<TreePart>();
+        this.treeParts = new ArrayList<>();
     }
 
     public void draw(Graphics g) {
@@ -55,18 +55,26 @@ public class Tree {
 //        treeParts.add(new Trunk(xy.getX(), xy.getY()+1));
 //    }
 
-    public void matureInstantly() {
-        treeParts = treenome.getAllTreeParts();
-        for(TreePart treePart : treeParts) {
-            treePart.translate(xy.getX(), xy.getY());
+//    public void matureInstantly() {
+//        treeParts = treenome.getAllTreeParts();
+//        for(TreePart treePart : treeParts) {
+//            treePart.translate(xy.getX(), xy.getY());
+//        }
+//    }
+
+    public void grow() {
+        if(energy >= 1000) {
+            TreePart nextGrowth = treenome.getNextGrowth();
+            if (nextGrowth != null) {
+                nextGrowth.translate(xy.getX(), xy.getY());
+                nextGrowth.setParentTree(this);
+                treeParts.add(nextGrowth);
+            }
+            energy -= 1000;
         }
     }
 
-    public void grow() {
-        TreePart nextGrowth = treenome.getNextGrowth();
-        if(nextGrowth != null) {
-            nextGrowth.translate(xy.getX(), xy.getY());
-            treeParts.add(nextGrowth);
-        }
+    public void obtainEnergy(int amount) {
+        energy += amount;
     }
 }

@@ -4,7 +4,7 @@ import java.awt.*;
 
 public class Config {
 
-    public static final int LOOP_DELAY = 500;
+    public static final int LOOP_DELAY = 50;
 
     public static final Color BACK_COLOR = new Color(50, 80, 150);
 

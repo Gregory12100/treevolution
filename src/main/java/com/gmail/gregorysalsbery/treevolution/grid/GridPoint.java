@@ -25,4 +25,8 @@ public class GridPoint {
     public int getGridDistanceBetween(GridPoint other) {
         return Math.abs(x - other.getX()) + Math.abs(y - other.getY());
     }
+
+    public boolean compare(int otherX, int otherY) {
+        return x == otherX && y == otherY;
+    }
 }

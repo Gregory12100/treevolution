@@ -327,7 +327,7 @@ public class Treenome {
      * @return - a list of all tree parts for this treenome
      */
     public List<TreePart> getAllTreeParts() {
-        List<TreePart> treeParts = new ArrayList<TreePart>();
+        List<TreePart> treeParts = new ArrayList<>();
         for(TreeNA treeNA : treeNAs) {
             switch (treeNA.getType()) {
                 case SEED -> treeParts.add(new Seed(treeNA.getXy()));
@@ -338,5 +338,9 @@ public class Treenome {
             }
         }
         return treeParts;
+    }
+
+    public void mutate() {
+        
     }
 }

@@ -4,11 +4,13 @@ import com.gmail.gregorysalsbery.treevolution.tree.Tree;
 import com.gmail.gregorysalsbery.treevolution.tree.dna.Treenome;
 import com.gmail.gregorysalsbery.treevolution.util.Config;
 import com.gmail.gregorysalsbery.treevolution.util.Util;
+import lombok.Getter;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 public class Generation {
 
     private List<Tree> trees;
