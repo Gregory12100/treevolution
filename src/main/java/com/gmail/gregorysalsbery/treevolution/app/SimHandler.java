@@ -25,7 +25,7 @@ public class SimHandler {
 
     public SimHandler() {
         dirts = createGround(Config.GROUND_DEPTH);
-        generation = new Generation("src/main/resources/treena0.csv", 20);
+        generation = new Generation("src/main/resources/treena1.csv", 10);
         sun = new Sun(generation.getTrees());
     }
 
