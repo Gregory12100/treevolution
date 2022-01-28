@@ -33,7 +33,7 @@ public abstract class GridObject {
         xy.translate(dx, dy);
     }
 
-    public void moveUp() {
-        xy.moveUp();
+    public void translateUp() {
+        xy.translateUp();
     }
 }

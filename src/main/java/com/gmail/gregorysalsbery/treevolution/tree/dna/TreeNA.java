@@ -5,6 +5,8 @@ import com.gmail.gregorysalsbery.treevolution.tree.parts.TreePartType;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 public class TreeNA {
 
@@ -18,8 +20,18 @@ public class TreeNA {
     @Setter
     private int growNumber = -1;
 
+    // boolean to track if this part has been checked in the mutation algorithm or not
+    // treenome will reset it to false after mutation algorithm completes
+    @Setter
+    private boolean checked = false;
+
     public TreeNA(TreePartType type, int x, int y) {
         this.xy = new GridPoint(x, y);
+        this.type = type;
+    }
+
+    public TreeNA(TreePartType type, GridPoint xy) {
+        this.xy = xy;
         this.type = type;
     }
 
@@ -44,5 +56,10 @@ public class TreeNA {
                 return null;
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "TreeNA(" + type.toString() + " at (" + xy.getX() + ", " + xy.getY() + "))";
     }
 }

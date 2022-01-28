@@ -20,7 +20,7 @@ public class SimHandler {
 
     public SimHandler() {
         dirts = createGround(Config.GROUND_DEPTH);
-        generation = new Generation(50);
+        generation = new Generation(10);
         sun = new Sun(generation.getTrees());
     }
 
