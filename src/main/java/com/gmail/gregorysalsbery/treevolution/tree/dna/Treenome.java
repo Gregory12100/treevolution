@@ -73,6 +73,10 @@ public class Treenome {
         }
     }
 
+    public int getSize() {
+        return treeNAs.size();
+    }
+
     /**
      * Loads a treenome from a csv file. The file has to be in a specific format as follows:
      *      Type X Y

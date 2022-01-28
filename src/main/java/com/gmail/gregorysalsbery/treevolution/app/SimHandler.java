@@ -3,6 +3,7 @@ package com.gmail.gregorysalsbery.treevolution.app;
 import com.gmail.gregorysalsbery.treevolution.environment.Dirt;
 import com.gmail.gregorysalsbery.treevolution.environment.Sun;
 import com.gmail.gregorysalsbery.treevolution.generation.Generation;
+import com.gmail.gregorysalsbery.treevolution.tree.dna.Treenome;
 import com.gmail.gregorysalsbery.treevolution.util.Config;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,16 +19,32 @@ public class SimHandler {
     private List<Dirt> dirts;
     private Sun sun;
 
+    private int stepCount = 0;
+
+    private int generationCount = 0;
+
     public SimHandler() {
         dirts = createGround(Config.GROUND_DEPTH);
-        generation = new Generation(10);
+        generation = new Generation("src/main/resources/treena0.csv", 20);
         sun = new Sun(generation.getTrees());
     }
 
     public void update(float dt) {
         sun.shine();
         generation.update(dt);
-//        log.debug("Tree energy: {}", generation.getTrees().get(0).getEnergy());
+
+        if(stepCount > 1200) {
+            log.debug("End of generation {}", generationCount);
+            stepCount = 0;
+            Treenome bestTreenome = generation.getBestTree().getTreenome();
+            String savePath = "src/main/resources/run/bestFromGen" + generationCount + ".csv";
+            bestTreenome.writeToFile(savePath);
+            generation = new Generation(savePath, 20);
+            sun.setTrees(generation.getTrees());
+            generationCount++;
+        } else {
+            stepCount++;
+        }
     }
 
     public void draw(Graphics g) {

@@ -5,20 +5,24 @@ import com.gmail.gregorysalsbery.treevolution.tree.dna.Treenome;
 import com.gmail.gregorysalsbery.treevolution.util.Config;
 import com.gmail.gregorysalsbery.treevolution.util.Util;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Getter
 public class Generation {
 
     private List<Tree> trees;
 
-    public Generation(int numTrees) {
+    public Generation(String filepath, int numTrees) {
         trees = new ArrayList<>();
         for(int i=0; i<numTrees; i++) {
-            Treenome treenome = new Treenome("src/main/resources/treena1.csv");
+            Treenome treenome = new Treenome(filepath);
             trees.add(new Tree(treenome, Util.getRandomGridX(), Config.GROUND_DEPTH-1));
         }
     }
@@ -33,5 +37,21 @@ public class Generation {
         for(Tree tree : trees) {
             tree.draw(g);
         }
+    }
+
+    public void printTrees() {
+        log.debug("Here are the trees");
+        trees.forEach(t -> log.debug("    {}", t));
+    }
+
+    public List<Tree> getBestTrees(int numBest) {
+        List<Tree> bestTrees = trees.stream().sorted(Comparator.comparing(Tree::getScore).reversed()).limit(numBest).collect(Collectors.toList());
+        log.debug("Here are the best {} trees", numBest);
+        bestTrees.forEach(t -> log.debug("    {}", t));
+        return bestTrees;
+    }
+
+    public Tree getBestTree() {
+        return getBestTrees(1).get(0);
     }
 }

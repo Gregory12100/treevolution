@@ -14,7 +14,7 @@ import java.util.List;
 @Slf4j
 public class Tree {
 
-    private int energy = 200000;
+    private int energy = 10000;
     private int water;
     private int food;
 
@@ -76,5 +76,22 @@ public class Tree {
 
     public void obtainEnergy(int amount) {
         energy += amount;
+    }
+
+    public int getSize() {
+        return treeParts.size();
+    }
+
+    public boolean isFullGrown() {
+        return getSize() == treenome.getSize();
+    }
+
+    public int getScore() {
+        return energy/1000 + treeParts.size();
+    }
+
+    @Override
+    public String toString() {
+        return "Tree(size=" + treeParts.size() + ", energy=" + energy + ", score=" + getScore() + ")";
     }
 }

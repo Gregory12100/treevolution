@@ -4,6 +4,7 @@ import com.gmail.gregorysalsbery.treevolution.grid.GridPoint;
 import com.gmail.gregorysalsbery.treevolution.tree.Tree;
 import com.gmail.gregorysalsbery.treevolution.tree.parts.TreePart;
 import com.gmail.gregorysalsbery.treevolution.util.Config;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ public class Sun {
 
     private static final int START_LIGHT_LEVEL = 10;
 
+    @Setter
     private List<Tree> trees;
 
     public Sun(List<Tree> trees) {
