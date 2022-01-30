@@ -23,9 +23,11 @@ public class SimHandler {
 
     private int generationCount = 0;
 
+    private int numTrees = 10;
+
     public SimHandler() {
         dirts = createGround(Config.GROUND_DEPTH);
-        generation = new Generation("src/main/resources/treena1.csv", 10);
+        generation = new Generation("src/main/resources/treenaTest.csv", numTrees);
         sun = new Sun(generation.getTrees());
     }
 
@@ -39,7 +41,7 @@ public class SimHandler {
             Treenome bestTreenome = generation.getBestTree().getTreenome();
             String savePath = "src/main/resources/run/bestFromGen" + generationCount + ".csv";
             bestTreenome.writeToFile(savePath);
-            generation = new Generation(savePath, 20);
+            generation = new Generation(savePath, numTrees);
             sun.setTrees(generation.getTrees());
             generationCount++;
         } else {

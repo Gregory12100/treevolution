@@ -5,5 +5,6 @@ public enum TreePartType {
     TRUNK,
     ROOT,
     BRANCH,
-    LEAF;
+    LEAF,
+    FRUIT
 }

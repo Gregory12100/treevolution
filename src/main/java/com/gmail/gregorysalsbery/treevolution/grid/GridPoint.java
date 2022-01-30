@@ -18,6 +18,10 @@ public class GridPoint {
         y += dy;
     }
 
+    public GridPoint translateNew(int dx, int dy) {
+        return new GridPoint(x+dx, y+dy);
+    }
+
     public void translateUp() {
         translate(0, 1);
     }
@@ -54,11 +58,36 @@ public class GridPoint {
         return Math.abs(x - other.getX()) + Math.abs(y - other.getY());
     }
 
+    public int getHorizontalDistanceBetween(GridPoint other) {
+        return Math.abs(x - other.getX());
+    }
+
+    public int getVerticalDistanceBetween(GridPoint other) {
+        return Math.abs(y - other.getY());
+    }
+
+    public boolean isHorizontalAdjacent(GridPoint other) {
+        return this.getVerticalDistanceBetween(other) == 0 && this.getHorizontalDistanceBetween(other) == 1;
+    }
+
+    public boolean isVerticalAdjacent(GridPoint other) {
+        return this.getVerticalDistanceBetween(other) == 1 && this.getHorizontalDistanceBetween(other) == 0;
+    }
+
+    public boolean isAdjacent(GridPoint other) {
+        return this.getVerticalDistanceBetween(other) == 1 ^ this.getHorizontalDistanceBetween(other) == 1;
+    }
+
     public boolean compare(int otherX, int otherY) {
         return x == otherX && y == otherY;
     }
 
     public boolean compare(GridPoint other) {
         return compare(other.getX(), other.getY());
+    }
+
+    @Override
+    public String toString() {
+        return "(x="+x+", y="+y+")";
     }
 }

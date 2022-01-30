@@ -14,7 +14,7 @@ import java.util.List;
 @Slf4j
 public class Tree {
 
-    private int energy = 10000;
+    private int energy = 5000;
     private int water;
     private int food;
 
@@ -38,38 +38,30 @@ public class Tree {
         }
     }
 
-//    public void sprout() {
-//        treeParts.add(new Seed(xy.getX(), xy.getY()));
-//        treeParts.add(new Root(xy.getX(), xy.getY()-1));
-//        treeParts.add(new Trunk(xy.getX(), xy.getY()+1));
-//        treeParts.add(new Trunk(xy.getX(), xy.getY()+2));
-//        treeParts.add(new Leaf(xy.getX(), xy.getY()+3));
-//    }
-//
-//    public void growHigher() {
-//        for(TreePart treePart : treeParts) {
-//            if(treePart.getType() != TreePartType.SEED && treePart.getType() != TreePartType.ROOT) {
-//                treePart.moveUp();
-//            }
-//        }
-//        treeParts.add(new Trunk(xy.getX(), xy.getY()+1));
-//    }
-
-//    public void matureInstantly() {
-//        treeParts = treenome.getAllTreeParts();
-//        for(TreePart treePart : treeParts) {
-//            treePart.translate(xy.getX(), xy.getY());
-//        }
-//    }
+    public void growHigher() {
+        for(TreePart treePart : treeParts) {
+            if(treePart.getType() == TreePartType.LEAF || treePart.getType() == TreePartType.BRANCH || treePart.getType() == TreePartType.FRUIT) {
+                treePart.translateUp();
+            }
+        }
+    }
 
     public void grow() {
         if(energy >= 1000) {
             TreePart nextGrowth = treenome.getNextGrowth();
-            if (nextGrowth != null) {
-                nextGrowth.translate(xy.getX(), xy.getY());
-                nextGrowth.setParentTree(this);
-                treeParts.add(nextGrowth);
+            if(nextGrowth == null) {
+                return;
             }
+
+            nextGrowth.translate(xy.getX(), xy.getY());
+            nextGrowth.setParentTree(this);
+            treeParts.add(nextGrowth);
+
+            // move everything up if we just grew a trunk
+            if(nextGrowth.getType() == TreePartType.TRUNK) {
+                growHigher();
+            }
+
             energy -= 1000;
         }
     }
