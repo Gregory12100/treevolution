@@ -23,11 +23,6 @@ public class TreeNA {
     @Setter
     private int growNumber = -1;
 
-    // boolean to track if this part has been checked in the mutation algorithm or not
-    // treenome will reset it to false after mutation algorithm completes
-    @Setter
-    private boolean checked = false;
-
     public TreeNA(TreePartType type, int x, int y) {
         this.xy = new GridPoint(x, y);
         this.buildY = y;

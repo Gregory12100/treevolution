@@ -57,12 +57,10 @@ public class Treenome {
         leaves = new ArrayList<TreeNA>();
         fruits = new ArrayList<TreeNA>();
 
-        totalPossibleAdditiveMutations = new ArrayList<>();
-
         try {
             loadFromCsvFile(filepath);
             TreenomeUtil.checkTreenomeIsValid(this);
-            mutate();
+            Mutator.mutateTreenome(this);
             TreenomeUtil.checkTreenomeIsValid(this);
             GrowthSequencer.determineGrowthSequence(this);
         } catch (CsvValidationException | IOException | TreeNAInvalidException | GrowthSequenceException e) {
@@ -157,6 +155,8 @@ public class Treenome {
     // planning how to do inheritance for the growth sequence
     // the growth sequence is probably just as important as the final body plan and should be part of what can evolve
     // need to find a way to have it inheritable and mutatable
+    // could have probabilities to give priority to certain types of parts
+    // probabilities could then be inherited
 
     // TODO: limit branch and leaf height to at or below the full trunk height
 
@@ -191,227 +191,221 @@ public class Treenome {
         return treeParts;
     }
 
-    private void mutate() {
-        log.debug("Mutation started");
-
-        // clear out the possible additive mutation list
-        totalPossibleAdditiveMutations.clear();
-
-        // make sure all TreeNA have checked set to false
-        treeNAs.forEach(t -> t.setChecked(false));
-        // there's only one seed
-        // seed is starting point for mutation algorithm
-        TreeNA seed = seeds.get(0);
-        mutatePart(seed);
-        // reset all TreeNA to checked false
-        treeNAs.forEach(t -> t.setChecked(false));
-
-        // combine all the duplicate additive mutations
-        removePossibleAdditiveMutationDuplicates();
-
-        // print some details for debug
-        log.debug("Here are the possible additive mutations:");
-        for(PossibleAdditiveMutation mutation : totalPossibleAdditiveMutations) {
-            log.debug("{}", mutation);
-        }
-
-        // do the actual mutation
-        log.debug("Adding mutations:");
-        for(PossibleAdditiveMutation mutation : totalPossibleAdditiveMutations) {
-            // only instantiate the mutation with some low probability
-            if(rand.nextFloat() < 0.1f) {
-                // choose a type at random from the possible types
-                int randomTypeIndex = rand.nextInt(mutation.getPossibleTypes().size());
-                TreePartType mutationPartType = mutation.getPossibleTypes().get(randomTypeIndex);
-                log.debug("Adding mutation {} of type {}", mutation, mutationPartType);
-                treeNAs.add(new TreeNA(mutationPartType, mutation.getXy()));
-            }
-        }
-    }
-
-    // this is the recursive piece of the mutation algorithm
-    private void mutatePart(TreeNA treeNA) {
-        if(!treeNA.isChecked()) {
-            log.debug("Checking {}", treeNA);
-            treeNA.setChecked(true);
-
-            // additive mutations
-            // can only mutate in a spot where there is not a neighbor
-            // will have to avoid an additive mutation happening twice in the same empty spot
-            // collect all potential additive mutation sites into a list
-            // then remove the duplicates
-            // then do the actual mutations
-            log.debug("Find possible additive mutations");
-            totalPossibleAdditiveMutations.addAll(findPossibleAdditiveMutations(treeNA));
-
-            // TODO: subtractive mutations
-            // will have to re-check the whole treenome to make sure the body plan is still valid
-            // if some parts have been isolated, then will have to remove them
-
-            // TODO: final type of mutation would be changing one type of part into another (leaf becomes branch, etc...)
-            // again, will have to re-check the whole treenome to make sure the body plan is still valid
-            // if some parts have been isolated, then will have to remove them
-
-            // call mutatePart on the neighbors
-            TreenomeUtil.getNeighbors(treeNA, treeNAs).forEach(this::mutatePart);
-        }
-    }
-
-    private List<PossibleAdditiveMutation> findPossibleAdditiveMutations(TreeNA treeNA) {
-        List<TreeNA> neighbors = TreenomeUtil.getNeighbors(treeNA, treeNAs);
-
-        GridPoint adjacentUp = treeNA.getXy().getAdjacentUp();
-        GridPoint adjacentDown = treeNA.getXy().getAdjacentDown();
-        GridPoint adjacentLeft = treeNA.getXy().getAdjacentLeft();
-        GridPoint adjacentRight = treeNA.getXy().getAdjacentRight();
-
-        boolean upEmpty = true;
-        boolean downEmpty = true;
-        boolean leftEmpty = true;
-        boolean rightEmpty = true;
-
-        // determine which adjacent spaces are empty
-        for(TreeNA neighbor : neighbors) {
-            if(neighbor.getXy().compare(adjacentUp)) {
-                upEmpty = false;
-            } else if(neighbor.getXy().compare(adjacentDown)) {
-                downEmpty = false;
-            } else if(neighbor.getXy().compare(adjacentLeft)) {
-                leftEmpty = false;
-            } else if(neighbor.getXy().compare(adjacentRight)) {
-                rightEmpty = false;
-            }
-        }
-
-        List<PossibleAdditiveMutation> possibleAdditiveMutations = new ArrayList<>();
-        if(upEmpty) {
-            log.debug("Up is empty");
-            List<TreePartType> possibleTypes = findPossibleAdditiveMutationTypes(treeNA.getType(), Direction.UP);
-            if(possibleTypes.size() > 0) {
-                PossibleAdditiveMutation mutation = new PossibleAdditiveMutation(adjacentUp);
-                mutation.addPossibleTypes(possibleTypes);
-                possibleAdditiveMutations.add(mutation);
-                log.debug("Add this possible mutation: {}", mutation);
-            } else {
-                log.debug("There are no types that work in this direction though");
-            }
-        }
-        if(downEmpty) {
-            log.debug("Down is empty");
-            List<TreePartType> possibleTypes = findPossibleAdditiveMutationTypes(treeNA.getType(), Direction.DOWN);
-            if(possibleTypes.size() > 0) {
-                PossibleAdditiveMutation mutation = new PossibleAdditiveMutation(adjacentDown);
-                mutation.addPossibleTypes(possibleTypes);
-                possibleAdditiveMutations.add(mutation);
-                log.debug("Add this possible mutation: {}", mutation);
-            } else {
-                log.debug("There are no types that work in this direction though");
-            }
-        }
-        if(leftEmpty) {
-            log.debug("Left is empty");
-            List<TreePartType> possibleTypes = findPossibleAdditiveMutationTypes(treeNA.getType(), Direction.LEFT);
-            if(possibleTypes.size() > 0) {
-                PossibleAdditiveMutation mutation = new PossibleAdditiveMutation(adjacentLeft);
-                mutation.addPossibleTypes(possibleTypes);
-                possibleAdditiveMutations.add(mutation);
-                log.debug("Add this possible mutation: {}", mutation);
-            } else {
-                log.debug("There are no types that work in this direction though");
-            }
-        }
-        if(rightEmpty) {
-            log.debug("Right is empty");
-            List<TreePartType> possibleTypes = findPossibleAdditiveMutationTypes(treeNA.getType(), Direction.RIGHT);
-            if(possibleTypes.size() > 0) {
-                PossibleAdditiveMutation mutation = new PossibleAdditiveMutation(adjacentRight);
-                mutation.addPossibleTypes(possibleTypes);
-                possibleAdditiveMutations.add(mutation);
-                log.debug("Add this possible mutation: {}", mutation);
-            } else {
-                log.debug("There are no types that work in this direction though");
-            }
-        }
-
-        // remove the mutations with no possible types
-        // these get created if there is an empty spot, but there is no type that will work there
-        //possibleAdditiveMutations.removeIf(m -> m.getPossibleTypes().size() < 1);
-
-        return possibleAdditiveMutations;
-    }
-
-    private List<TreePartType> findPossibleAdditiveMutationTypes(TreePartType parentType, Direction mutationDirection) {
-        List<TreePartType> possibleAdditiveMutationTypes = new ArrayList<>();
-        switch (parentType) {
-            case SEED -> {
-                switch (mutationDirection) {
-                    case UP -> {
-                        possibleAdditiveMutationTypes.add(TreePartType.LEAF);
-                        possibleAdditiveMutationTypes.add(TreePartType.TRUNK);
-                    }
-                    case DOWN -> {
-                        possibleAdditiveMutationTypes.add(TreePartType.ROOT);
-                    }
-                }
-            }
-            case TRUNK -> {
-                switch (mutationDirection) {
-                    case UP -> {
-                        possibleAdditiveMutationTypes.add(TreePartType.TRUNK);
-                    }
-                    case LEFT, RIGHT -> {
-                        possibleAdditiveMutationTypes.add(TreePartType.LEAF);
-                        possibleAdditiveMutationTypes.add(TreePartType.BRANCH);
-                    }
-                }
-            }
-            case ROOT -> {
-                switch (mutationDirection) {
-                    case DOWN, RIGHT, LEFT -> {
-                        possibleAdditiveMutationTypes.add(TreePartType.ROOT);
-                    }
-                }
-            }
-            case BRANCH -> {
-                possibleAdditiveMutationTypes.add(TreePartType.LEAF);
-                possibleAdditiveMutationTypes.add(TreePartType.BRANCH);
-                if(mutationDirection == Direction.DOWN) {
-                    possibleAdditiveMutationTypes.add(TreePartType.FRUIT);
-                }
-            }
-        }
-        return possibleAdditiveMutationTypes;
-    }
-
-    public void removePossibleAdditiveMutationDuplicates() {
-        // first have to find the duplicates
-        totalPossibleAdditiveMutations.forEach(m -> m.setChecked(false));
-        for(PossibleAdditiveMutation mutation1 : totalPossibleAdditiveMutations) {
-            if(mutation1.isChecked()) {
-                continue;
-            }
-            mutation1.setChecked(true);
-            for(PossibleAdditiveMutation mutation2 : totalPossibleAdditiveMutations) {
-                if(mutation2.isChecked()) {
-                    // skip this iteration if mutation2 has already been looked at as a mutation1
-                    // this also skips the self to self comparison
-                    continue;
-                }
-                if(mutation1.getXy().compare(mutation2.getXy())) {
-                    mutation2.setChecked(true);
-                    mutation2.setDuplicate(true);
-                    // the combining action
-                    // adding all the possible types from mutation2 into mutation1's list
-                    // mutation1 may have more than 1 of the same type in its list now
-                    // but that may actually not be a problem
-                    // can make it more likely that the type with more entries will be chosen as the mutation
-                    mutation1.addPossibleTypes(mutation2.getPossibleTypes());
-                }
-            }
-        }
-        // actually do the removal of the duplicates
-        totalPossibleAdditiveMutations.removeIf(PossibleAdditiveMutation::isDuplicate);
-        // reset the checked flag
-        totalPossibleAdditiveMutations.forEach(m -> m.setChecked(false));
-    }
+//    private void mutate() {
+//        log.debug("Mutation started");
+//
+//        // clear out the possible additive mutation list
+//        totalPossibleAdditiveMutations.clear();
+//
+//        // make sure all TreeNA have checked set to false
+//        treeNAs.forEach(t -> t.setChecked(false));
+//        // there's only one seed
+//        // seed is starting point for mutation algorithm
+//        TreeNA seed = seeds.get(0);
+//        mutatePart(seed);
+//        // reset all TreeNA to checked false
+//        treeNAs.forEach(t -> t.setChecked(false));
+//
+//        // combine all the duplicate additive mutations
+//        removePossibleAdditiveMutationDuplicates();
+//
+//        // print some details for debug
+//        log.debug("Here are the possible additive mutations:");
+//        for(PossibleAdditiveMutation mutation : totalPossibleAdditiveMutations) {
+//            log.debug("{}", mutation);
+//        }
+//
+//        // do the actual mutation
+//        log.debug("Adding mutations:");
+//        for(PossibleAdditiveMutation mutation : totalPossibleAdditiveMutations) {
+//            // only instantiate the mutation with some low probability
+//            if(rand.nextFloat() < 0.1f) {
+//                // choose a type at random from the possible types
+//                int randomTypeIndex = rand.nextInt(mutation.getPossibleTypes().size());
+//                TreePartType mutationPartType = mutation.getPossibleTypes().get(randomTypeIndex);
+//                log.debug("Adding mutation {} of type {}", mutation, mutationPartType);
+//                treeNAs.add(new TreeNA(mutationPartType, mutation.getXy()));
+//            }
+//        }
+//    }
+//
+//    // this is the recursive piece of the mutation algorithm
+//    private void mutatePart(TreeNA treeNA) {
+//        if(!treeNA.isChecked()) {
+//            log.debug("Checking {}", treeNA);
+//            treeNA.setChecked(true);
+//
+//            // additive mutations
+//            // can only mutate in a spot where there is not a neighbor
+//            // will have to avoid an additive mutation happening twice in the same empty spot
+//            // collect all potential additive mutation sites into a list
+//            // then remove the duplicates
+//            // then do the actual mutations
+//            log.debug("Find possible additive mutations");
+//            totalPossibleAdditiveMutations.addAll(findPossibleAdditiveMutations(treeNA));
+//
+//
+//
+//            // call mutatePart on the neighbors
+//            TreenomeUtil.getNeighbors(treeNA, treeNAs).forEach(this::mutatePart);
+//        }
+//    }
+//
+//    private List<PossibleAdditiveMutation> findPossibleAdditiveMutations(TreeNA treeNA) {
+//        List<TreeNA> neighbors = TreenomeUtil.getNeighbors(treeNA, treeNAs);
+//
+//        GridPoint adjacentUp = treeNA.getXy().getAdjacentUp();
+//        GridPoint adjacentDown = treeNA.getXy().getAdjacentDown();
+//        GridPoint adjacentLeft = treeNA.getXy().getAdjacentLeft();
+//        GridPoint adjacentRight = treeNA.getXy().getAdjacentRight();
+//
+//        boolean upEmpty = true;
+//        boolean downEmpty = true;
+//        boolean leftEmpty = true;
+//        boolean rightEmpty = true;
+//
+//        // determine which adjacent spaces are empty
+//        for(TreeNA neighbor : neighbors) {
+//            if(neighbor.getXy().compare(adjacentUp)) {
+//                upEmpty = false;
+//            } else if(neighbor.getXy().compare(adjacentDown)) {
+//                downEmpty = false;
+//            } else if(neighbor.getXy().compare(adjacentLeft)) {
+//                leftEmpty = false;
+//            } else if(neighbor.getXy().compare(adjacentRight)) {
+//                rightEmpty = false;
+//            }
+//        }
+//
+//        List<PossibleAdditiveMutation> possibleAdditiveMutations = new ArrayList<>();
+//        if(upEmpty) {
+//            log.debug("Up is empty");
+//            List<TreePartType> possibleTypes = findPossibleAdditiveMutationTypes(treeNA.getType(), Direction.UP);
+//            if(possibleTypes.size() > 0) {
+//                PossibleAdditiveMutation mutation = new PossibleAdditiveMutation(adjacentUp);
+//                mutation.addPossibleTypes(possibleTypes);
+//                possibleAdditiveMutations.add(mutation);
+//                log.debug("Add this possible mutation: {}", mutation);
+//            } else {
+//                log.debug("There are no types that work in this direction though");
+//            }
+//        }
+//        if(downEmpty) {
+//            log.debug("Down is empty");
+//            List<TreePartType> possibleTypes = findPossibleAdditiveMutationTypes(treeNA.getType(), Direction.DOWN);
+//            if(possibleTypes.size() > 0) {
+//                PossibleAdditiveMutation mutation = new PossibleAdditiveMutation(adjacentDown);
+//                mutation.addPossibleTypes(possibleTypes);
+//                possibleAdditiveMutations.add(mutation);
+//                log.debug("Add this possible mutation: {}", mutation);
+//            } else {
+//                log.debug("There are no types that work in this direction though");
+//            }
+//        }
+//        if(leftEmpty) {
+//            log.debug("Left is empty");
+//            List<TreePartType> possibleTypes = findPossibleAdditiveMutationTypes(treeNA.getType(), Direction.LEFT);
+//            if(possibleTypes.size() > 0) {
+//                PossibleAdditiveMutation mutation = new PossibleAdditiveMutation(adjacentLeft);
+//                mutation.addPossibleTypes(possibleTypes);
+//                possibleAdditiveMutations.add(mutation);
+//                log.debug("Add this possible mutation: {}", mutation);
+//            } else {
+//                log.debug("There are no types that work in this direction though");
+//            }
+//        }
+//        if(rightEmpty) {
+//            log.debug("Right is empty");
+//            List<TreePartType> possibleTypes = findPossibleAdditiveMutationTypes(treeNA.getType(), Direction.RIGHT);
+//            if(possibleTypes.size() > 0) {
+//                PossibleAdditiveMutation mutation = new PossibleAdditiveMutation(adjacentRight);
+//                mutation.addPossibleTypes(possibleTypes);
+//                possibleAdditiveMutations.add(mutation);
+//                log.debug("Add this possible mutation: {}", mutation);
+//            } else {
+//                log.debug("There are no types that work in this direction though");
+//            }
+//        }
+//
+//        // remove the mutations with no possible types
+//        // these get created if there is an empty spot, but there is no type that will work there
+//        //possibleAdditiveMutations.removeIf(m -> m.getPossibleTypes().size() < 1);
+//
+//        return possibleAdditiveMutations;
+//    }
+//
+//    private List<TreePartType> findPossibleAdditiveMutationTypes(TreePartType parentType, Direction mutationDirection) {
+//        List<TreePartType> possibleAdditiveMutationTypes = new ArrayList<>();
+//        switch (parentType) {
+//            case SEED -> {
+//                switch (mutationDirection) {
+//                    case UP -> {
+//                        possibleAdditiveMutationTypes.add(TreePartType.LEAF);
+//                        possibleAdditiveMutationTypes.add(TreePartType.TRUNK);
+//                    }
+//                    case DOWN -> {
+//                        possibleAdditiveMutationTypes.add(TreePartType.ROOT);
+//                    }
+//                }
+//            }
+//            case TRUNK -> {
+//                switch (mutationDirection) {
+//                    case UP -> {
+//                        possibleAdditiveMutationTypes.add(TreePartType.TRUNK);
+//                    }
+//                    case LEFT, RIGHT -> {
+//                        possibleAdditiveMutationTypes.add(TreePartType.LEAF);
+//                        possibleAdditiveMutationTypes.add(TreePartType.BRANCH);
+//                    }
+//                }
+//            }
+//            case ROOT -> {
+//                switch (mutationDirection) {
+//                    case DOWN, RIGHT, LEFT -> {
+//                        possibleAdditiveMutationTypes.add(TreePartType.ROOT);
+//                    }
+//                }
+//            }
+//            case BRANCH -> {
+//                possibleAdditiveMutationTypes.add(TreePartType.LEAF);
+//                possibleAdditiveMutationTypes.add(TreePartType.BRANCH);
+//                if(mutationDirection == Direction.DOWN) {
+//                    possibleAdditiveMutationTypes.add(TreePartType.FRUIT);
+//                }
+//            }
+//        }
+//        return possibleAdditiveMutationTypes;
+//    }
+//
+//    public void removePossibleAdditiveMutationDuplicates() {
+//        // first have to find the duplicates
+//        totalPossibleAdditiveMutations.forEach(m -> m.setChecked(false));
+//        for(PossibleAdditiveMutation mutation1 : totalPossibleAdditiveMutations) {
+//            if(mutation1.isChecked()) {
+//                continue;
+//            }
+//            mutation1.setChecked(true);
+//            for(PossibleAdditiveMutation mutation2 : totalPossibleAdditiveMutations) {
+//                if(mutation2.isChecked()) {
+//                    // skip this iteration if mutation2 has already been looked at as a mutation1
+//                    // this also skips the self to self comparison
+//                    continue;
+//                }
+//                if(mutation1.getXy().compare(mutation2.getXy())) {
+//                    mutation2.setChecked(true);
+//                    mutation2.setDuplicate(true);
+//                    // the combining action
+//                    // adding all the possible types from mutation2 into mutation1's list
+//                    // mutation1 may have more than 1 of the same type in its list now
+//                    // but that may actually not be a problem
+//                    // can make it more likely that the type with more entries will be chosen as the mutation
+//                    mutation1.addPossibleTypes(mutation2.getPossibleTypes());
+//                }
+//            }
+//        }
+//        // actually do the removal of the duplicates
+//        totalPossibleAdditiveMutations.removeIf(PossibleAdditiveMutation::isDuplicate);
+//        // reset the checked flag
+//        totalPossibleAdditiveMutations.forEach(m -> m.setChecked(false));
+//    }
 }

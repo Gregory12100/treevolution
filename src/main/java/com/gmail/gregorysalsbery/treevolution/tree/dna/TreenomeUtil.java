@@ -32,6 +32,22 @@ public class TreenomeUtil {
     }
 
     /**
+     * Checks whether or not a specific location is occupied by a treeNA in a treenome
+     *
+     * @param treenome - treenome to check
+     * @param xy - grid point to check
+     * @return - true if the space is occupied, false otherwise
+     */
+    public static Boolean isSpaceOccupied(Treenome treenome, GridPoint xy) {
+        for(TreeNA treeNA : treenome.getTreeNAs()) {
+            if(treeNA.getXy().compare(xy)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Finds all the neighbors of a treeNA
      * Neighbors are other treeNA that are immediately adjacent
      *

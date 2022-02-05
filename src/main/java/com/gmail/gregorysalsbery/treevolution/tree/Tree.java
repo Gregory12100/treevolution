@@ -63,7 +63,10 @@ public class Tree {
             treeParts.add(nextGrowth);
 
             // let the sun know about this part so it can sort it into a light column
-            sun.registerPart(nextGrowth);
+            // roots don't matter though
+            if(nextGrowth.getType() != TreePartType.ROOT) {
+                sun.registerPart(nextGrowth);
+            }
 
             // move everything up if we just grew a trunk
             if(nextGrowth.getType() == TreePartType.TRUNK) {
