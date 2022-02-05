@@ -25,6 +25,14 @@ public abstract class TreePart extends GridObject {
         this.health = health;
     }
 
+    public int getX() {
+        return getXy().getX();
+    }
+
+    public int getY() {
+        return getXy().getY();
+    }
+
     public int hitByLight(int lightLevel) {
         // light level is always at least 1 at this point
         // light level is max 10

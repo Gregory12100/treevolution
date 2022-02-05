@@ -1,5 +1,6 @@
 package com.gmail.gregorysalsbery.treevolution.tree;
 
+import com.gmail.gregorysalsbery.treevolution.environment.Sun;
 import com.gmail.gregorysalsbery.treevolution.grid.GridPoint;
 import com.gmail.gregorysalsbery.treevolution.tree.dna.Treenome;
 import com.gmail.gregorysalsbery.treevolution.tree.parts.*;
@@ -14,7 +15,7 @@ import java.util.List;
 @Slf4j
 public class Tree {
 
-    private int energy = 50000;
+    private int energy = 5000;
     private int water;
     private int food;
 
@@ -23,13 +24,17 @@ public class Tree {
     Treenome treenome;
     List<TreePart> treeParts;
 
+    Sun sun;
+
     // TODO: get current height, depth, and width in both directions of tree
 
-    public Tree(Treenome treenome, int seedX, int seedY) {
+    public Tree(Treenome treenome, int seedX, int seedY, Sun sun) {
         this.xy = new GridPoint(seedX, seedY);
 
         this.treenome = treenome;
         this.treeParts = new ArrayList<>();
+
+        this.sun = sun;
     }
 
     public void draw(Graphics g) {
@@ -56,6 +61,9 @@ public class Tree {
             nextGrowth.translate(xy.getX(), xy.getY());
             nextGrowth.setParentTree(this);
             treeParts.add(nextGrowth);
+
+            // let the sun know about this part so it can sort it into a light column
+            sun.registerPart(nextGrowth);
 
             // move everything up if we just grew a trunk
             if(nextGrowth.getType() == TreePartType.TRUNK) {
