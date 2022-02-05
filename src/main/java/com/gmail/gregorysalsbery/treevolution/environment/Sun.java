@@ -10,6 +10,14 @@ import java.util.List;
 
 public class Sun {
 
+    // TODO: need to find a more efficient method for doing the sun
+    // the current method literally looks at every space and then looks at every individual tree part for each space
+    // maybe each treepart could register its position to a new Grid class
+    // the grid class could maintain lists of everything in a particular column
+    // tree parts never change their x positions so the lists per column would only have to change to add new growths
+    // then we can sort the column lists by y position and assign sunlight down the list
+    // should be much faster!
+
     private static final int START_LIGHT_LEVEL = 10;
 
     @Setter

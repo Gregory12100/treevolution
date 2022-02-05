@@ -23,7 +23,7 @@ public class SimHandler {
 
     private int generationCount = 0;
 
-    private int numTrees = 10;
+    private int numTrees = 1;
 
     public SimHandler() {
         dirts = createGround(Config.GROUND_DEPTH);

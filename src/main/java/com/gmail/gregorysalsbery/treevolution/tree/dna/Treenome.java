@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
  * Has methods to load from file and write back to a file
  * Determines growth sequence of tree parts
  *
- * TODO: handle mutation
  */
 @Getter
 @Slf4j
@@ -62,8 +61,8 @@ public class Treenome {
 
         try {
             loadFromCsvFile(filepath);
-//            TreenomeUtil.checkTreenomeIsValid(this);
-//            mutate();
+            TreenomeUtil.checkTreenomeIsValid(this);
+            mutate();
             TreenomeUtil.checkTreenomeIsValid(this);
             GrowthSequencer.determineGrowthSequence(this);
         } catch (CsvValidationException | IOException | TreeNAInvalidException | GrowthSequenceException e) {
@@ -153,72 +152,6 @@ public class Treenome {
             log.error("Failed to write treenome to file");
         }
     }
-
-//    /**
-//     * Determines the order in which a tree will be grown.
-//     * Assigns a grow number to each part
-//     * Starts with the seed with grow number 0 and increments up from there
-//     *
-//     * @throws GrowthSequenceException - if there was a problem determining the growth sequence for the treenome
-//     */
-//    private void determineGrowthSequence() throws GrowthSequenceException {
-//        int growNumber = 0;
-//        int currentTrunkHeight = 0;
-//
-//        // seed is first
-//        TreeNA seed = seeds.get(growNumber);
-//        seed.setGrowNumber(growNumber);
-//        growNumber++;
-//
-//        // determine next set of possible growths
-//        List<TreeNA> possibleGrowths = TreenomeUtil.filterOutNonGrowableNeighors(seed, TreenomeUtil.getNeighbors(seed, treeNAs));
-//        while(possibleGrowths.size() > 0) {
-//            // randomly choose a next possible growth
-//            // TODO: allow probability weighting to different tree part types
-//            // TODO: also allow weighting to different growth directions - tree prefers up instead of out
-//            TreeNA nextGrowth = possibleGrowths.get(rand.nextInt(possibleGrowths.size()));
-//            nextGrowth.setGrowNumber(growNumber);
-//            possibleGrowths.remove(nextGrowth);
-//            growNumber++;
-//
-//            // if we just grew a trunk, then the trunk height increases
-//            if(nextGrowth.getType() == TreePartType.TRUNK) {
-//                currentTrunkHeight++;
-//            }
-//
-//            // add any new possible growths that the next growth has attached to it
-//            List<TreeNA> neighbors = TreenomeUtil.getNeighbors(nextGrowth, treeNAs);
-//            possibleGrowths.addAll(TreenomeUtil.filterOutNonGrowableNeighors(nextGrowth, neighbors));
-//            // remove any duplicates
-//            possibleGrowths = possibleGrowths.stream().distinct().collect(Collectors.toList());
-//        }
-//
-//        // make sure all parts got a grow number
-//        for(TreeNA treeNA : treeNAs) {
-//            if(treeNA.getGrowNumber() < 0) {
-//                log.error("This treeNA has a growth sequence problem: {}", treeNA);
-//                throw new GrowthSequenceException("A treeNA was found with no grow number assigned");
-//            }
-//        }
-//
-//        // sort the list by grow number
-//        treeNAs.sort(Comparator.comparing(TreeNA::getGrowNumber));
-//
-////        log.debug("Here is the final grow sequence");
-////        for(TreeNA treeNA : treeNAs) {
-////            log.debug("{} - {} at ({},{})", treeNA.getGrowNumber(), treeNA.getType(), treeNA.getXy().getX(), treeNA.getXy().getY());
-////        }
-////        log.debug("Total sequence length: {}", treeNAs.size());
-//    }
-
-    // TODO: modified trunk growing
-    // planning how to do modified trunk growing
-    // will have to keep track of current trunk height as build numbers are being assigned
-    // current trunk height is just the number of trunks that have been built up to now
-    // modify (or make new function) get neighbors for trunk
-    // the neighbors will be y offset by full trunk height minus current trunk height
-    // branches and leaves will have to remember a new xy of where they actually get built
-    // mutations will have to allow for inserting trunks at the bottom, thereby moving all parts y up one
 
     // TODO: inheritance for the growth sequence
     // planning how to do inheritance for the growth sequence

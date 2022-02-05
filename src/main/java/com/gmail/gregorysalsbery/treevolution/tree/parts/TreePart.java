@@ -42,13 +42,18 @@ public abstract class TreePart extends GridObject {
                 // root should never be hit by light
             }
             case BRANCH -> {
-                // branch will 5 light and give the tree 0 energy
+                // branch will block 5 light and give the tree 0 energy
                 lightLevel -= 5;
             }
             case LEAF -> {
                 // leaf will block 3 light and give the tree the amount of energy in light level
                 parentTree.obtainEnergy(lightLevel);
                 lightLevel -= 3;
+            }
+            case FRUIT -> {
+                // fruit will block 5 light and give the tree 0 energy
+                // TODO: make light damage fruit
+                lightLevel -= 5;
             }
         }
         return lightLevel;

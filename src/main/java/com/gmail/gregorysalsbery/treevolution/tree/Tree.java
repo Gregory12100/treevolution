@@ -14,7 +14,7 @@ import java.util.List;
 @Slf4j
 public class Tree {
 
-    private int energy = 5000;
+    private int energy = 50000;
     private int water;
     private int food;
 
