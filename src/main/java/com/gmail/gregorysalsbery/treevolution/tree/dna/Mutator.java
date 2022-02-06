@@ -40,6 +40,7 @@ public class Mutator {
                 // check that another mutation has not already been added in this mutation's spot
                 if(!checkMutationXyAlreadyOccupied(mutation, additiveMutationsToAdd)) {
                     additiveMutationsToAdd.add(mutation);
+                    log.debug("Adding this mutation: {}", mutation);
                 }
             }
         }

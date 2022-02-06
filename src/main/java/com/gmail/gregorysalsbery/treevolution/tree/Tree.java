@@ -93,6 +93,25 @@ public class Tree {
         return energy/1000 + treeParts.size();
     }
 
+    public int getCurrentHeightAboveGround() {
+        int maxY = 0;
+        for(TreePart part : treeParts) {
+            if(part.getY() > maxY) maxY = part.getY();
+        }
+        // return highest y minus the seed y
+        return maxY - xy.getY();
+    }
+
+    public int getCurrentWidth() {
+        int minX = 0;
+        int maxX = 0;
+        for(TreePart part : treeParts) {
+            if(part.getX() > maxX) maxX = part.getX();
+            if(part.getX() < minX) minX = part.getX();
+        }
+        return maxX - minX;
+    }
+
     @Override
     public String toString() {
         return "Tree(size=" + treeParts.size() + ", energy=" + energy + ", score=" + getScore() + ")";
