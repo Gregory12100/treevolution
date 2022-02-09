@@ -3,7 +3,9 @@
 To build in docker
 Install docker (Ubuntu steps)
 > sudo apt install docker.io
+> 
 > sudo systemctl start docker
+> 
 > sudo systemctl enable docker
 
 Verify image
