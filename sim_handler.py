@@ -1,6 +1,8 @@
 import config
-import trees.tree
 from environment.dirt import Dirt
+from environment.sun import Sun
+from trees.tree import Tree
+from trees.treenome.treenome import Treenome
 
 
 def init_ground():
@@ -14,11 +16,19 @@ def init_ground():
 class SimHandler:
     def __init__(self):
         self.ground = init_ground()
+        self.sun = Sun()
+
+        self.treenome = Treenome('treena_test.csv')
+        self.tree = Tree(self.treenome, 50, 10, self.sun)
 
     def update(self):
-        pass
+        self.sun.shine()
+
+        self.tree.update()
 
     def draw(self, grid_surface):
         for dirt in self.ground:
             dirt.draw(grid_surface)
+
+        self.tree.draw()
 

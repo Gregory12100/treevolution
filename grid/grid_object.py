@@ -16,3 +16,6 @@ class GridObject:
 
     def translate(self, dx, dy):
         self.xy.translate(dx, dy)
+
+    def translate_up(self):
+        self.xy.translate(0, 1)
