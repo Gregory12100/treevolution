@@ -11,7 +11,7 @@ class TreeNA:
         self.part_type = part_type
 
         # keeps track of what y level this part gets built at
-        self.build_y = -1
+        self.build_y = self.get_y()
 
         # keeps track of when in the growth sequence this part is grown
         self.grow_number = -1

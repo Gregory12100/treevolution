@@ -16,7 +16,7 @@ def determine_part_color(part_type):
     match part_type:
         case TreePartType.SEED:
             return 80, 100, 40
-        case TreePartType.TRUNK, TreePartType.BRANCH:
+        case TreePartType.TRUNK | TreePartType.BRANCH:
             return 80, 50, 50
         case TreePartType.LEAF:
             return 10, 120, 50
@@ -27,11 +27,11 @@ def determine_part_color(part_type):
 
 
 class TreePart(GridObject):
-    def __init__(self, part_type, x, y, color):
+    def __init__(self, part_type, x, y):
         self.parent_tree = None
         self.part_type = part_type
         self.color = determine_part_color(part_type)
-        super().__init__(x, y, color)
+        super().__init__(x, y, self.color)
 
     # shortcut method to get x coordinate of the tree part
     def get_x(self):
@@ -53,10 +53,10 @@ class TreePart(GridObject):
                 # leaf will block part of the light but give tree energy
                 self.parent_tree.obtain_energy(light_level)
                 light_level -= 3
-            case TreePartType.TRUNK, TreePartType.ROOT:
+            case TreePartType.TRUNK | TreePartType.ROOT:
                 # trunk and root will block all light
                 light_level = 0
-            case TreePartType.BRANCH, TreePartType.FRUIT:
+            case TreePartType.BRANCH | TreePartType.FRUIT:
                 # branch and fruit will block part of the light
                 light_level -= 5
         # we return whatever left over light there is to be used farther down the column

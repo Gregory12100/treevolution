@@ -1,5 +1,5 @@
 from trees.tree_part import TreePartType
-from trees.treenome import treenome_util
+from trees.treenome import treenome_util, growth_sequencer
 
 
 class Treenome:
@@ -11,9 +11,22 @@ class Treenome:
         # TODO: growth sequence
         # instead of a current growth number
         # may be able to keep track of next growth with an iterator of the treena list
+        growth_sequencer.determine_growth_sequence(self)
+        self.current_growth_number = 0
 
+    def get_seed(self):
+        for treena in self.treenas:
+            if treena.part_type == TreePartType.SEED:
+                return treena
+        return None
+
+    # return the next tree part in the growth sequence
     def get_next_growth(self):
-        pass
+        if self.current_growth_number < len(self.treenas):
+            next_growth = self.treenas[self.current_growth_number]
+            self.current_growth_number += 1
+            return treenome_util.create_tree_part_from_treena(next_growth)
+        return None
 
     def get_all_growths(self):
         pass

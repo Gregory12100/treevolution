@@ -1,5 +1,5 @@
 import util
-from trees.tree_part import TreePartType
+from trees.tree_part import TreePartType, TreePart
 from trees.treenome.treena import TreeNA
 
 
@@ -7,7 +7,7 @@ def load_treena_from_csv(filepath):
     rows = util.read_csv(filepath)
     treenas = []
     for row in rows:
-        treenas.append(TreeNA(TreePartType(row[0]), row[1], row[2]))
+        treenas.append(TreeNA(TreePartType(row[0]), int(row[1]), int(row[2])))
     return treenas
 
 
@@ -85,7 +85,7 @@ def get_neighbors_for_trunk(trunk: TreeNA, treenas: list[TreeNA], current_trunk_
 def filter_non_growable_neighbors(treena: TreeNA, neighbors: list[TreeNA]) -> list[TreeNA]:
     # leaf and fruit cannot grow anything, return empty list
     match treena.part_type:
-        case TreePartType.LEAF, TreePartType.FRUIT:
+        case TreePartType.LEAF | TreePartType.FRUIT:
             return []
 
     # check if neighbor has previously been added to the grow sequence
@@ -106,14 +106,14 @@ def filter_non_growable_neighbors(treena: TreeNA, neighbors: list[TreeNA]) -> li
         match treena.part_type:
             case TreePartType.TRUNK:
                 match neighbor.part_type:
-                    case TreePartType.SEED, TreePartType.ROOT:
+                    case TreePartType.SEED | TreePartType.ROOT:
                         neighbors_to_remove.append(neighbor)
             case TreePartType.ROOT:
                 if neighbor.part_type != TreePartType.ROOT:
                     neighbors_to_remove.append(neighbor)
             case TreePartType.BRANCH:
                 match neighbor.part_type:
-                    case TreePartType.SEED, TreePartType.ROOT, TreePartType.TRUNK:
+                    case TreePartType.SEED | TreePartType.ROOT | TreePartType.TRUNK:
                         neighbors_to_remove.append(neighbor)
 
     # do the actual removing
@@ -121,4 +121,9 @@ def filter_non_growable_neighbors(treena: TreeNA, neighbors: list[TreeNA]) -> li
         neighbors.remove(neighbor)
 
     return neighbors
+
+
+# handy method for creating new TreePart from TreeNA
+def create_tree_part_from_treena(treena: TreeNA) -> TreePart:
+    return TreePart(treena.part_type, treena.get_x(), treena.build_y)
 
