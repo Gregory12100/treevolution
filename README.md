@@ -8,7 +8,7 @@ Install docker (Ubuntu steps)
 > 
 > sudo systemctl enable docker
 
-Verify image
+Verify docker
 > docker --version
 
 Create the image
