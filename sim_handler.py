@@ -18,15 +18,20 @@ class SimHandler:
         self.ground = init_ground()
         self.sun = Sun()
 
-        self.treenome = Treenome('resources/treena_test.csv')
-        self.tree = Tree(self.treenome, 50, 9, self.sun)
+        self.trees = []
+        self.trees.append(Tree(Treenome('resources/treena_test.csv'), 32, 9, self.sun))
+        self.trees.append(Tree(Treenome('resources/treena_test.csv'), 64, 9, self.sun))
+        self.trees.append(Tree(Treenome('resources/treena_test.csv'), 98, 9, self.sun))
+        self.trees.append(Tree(Treenome('resources/treena_test.csv'), 130, 9, self.sun))
 
     def update(self):
         self.sun.shine()
-        self.tree.grow()
+        for tree in self.trees:
+            tree.grow()
 
     def draw(self, grid_surface):
         for dirt in self.ground:
             dirt.draw(grid_surface)
 
-        self.tree.draw(grid_surface)
+        for tree in self.trees:
+            tree.draw(grid_surface)
