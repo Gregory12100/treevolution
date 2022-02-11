@@ -1,16 +1,15 @@
 from trees.tree_part import TreePartType
-from trees.treenome import treenome_util, growth_sequencer
+from trees.treenome import treenome_util, growth_sequencer, mutator
 
 
 class Treenome:
     def __init__(self, filepath):
         self.treenas = treenome_util.load_treena_from_csv(filepath)
 
-        # TODO: mutation
+        # mutation
+        mutator.mutate_treenome(self)
 
-        # TODO: growth sequence
-        # instead of a current growth number
-        # may be able to keep track of next growth with an iterator of the treena list
+        # growth sequence
         growth_sequencer.determine_growth_sequence(self)
         self.current_growth_number = 0
 

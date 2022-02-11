@@ -1,6 +1,7 @@
 import math
 
 import config
+from grid.direction import Direction
 
 
 class GridPoint:
@@ -52,3 +53,15 @@ class GridPoint:
         # note that != is equivalent to xor for booleans
         # practically this method would also work with just normal or
         return self.is_horizontal_adjacent(other_xy) != self.is_vertical_adjacent(other_xy)
+
+    # returns a new adjacent grid point in the given direction
+    def get_adjacent(self, direction):
+        match direction:
+            case Direction.UP:
+                return self.translate_new(0, 1)
+            case Direction.DOWN:
+                return self.translate_new(0, -1)
+            case Direction.LEFT:
+                return self.translate_new(-1, 0)
+            case Direction.RIGHT:
+                return self.translate_new(1, 0)
