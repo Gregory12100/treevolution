@@ -14,7 +14,8 @@ def mutate_treenome(treenome):
     # additive mutations
     additive_mutation(treenome)
 
-    # TODO: part type change mutation
+    # part type change mutation
+    part_type_change_mutation(treenome)
 
 
 def additive_mutation(treenome):
@@ -35,7 +36,7 @@ def additive_mutation(treenome):
     # mutations to add (MADs)
     mads = []
     for pam in pams:
-        if random.random() < 0.1:
+        if random.random() < 0.01:
             # there may be multiple possible mutations at the same location
             # make sure that another mutation has not already been added in this mutation's spot
             if not check_mutation_xy_already_occupied(pam, mads):
@@ -169,7 +170,65 @@ def subtractive_mutation(treenome):
     for treena in ttr:
         treenas.remove(treena)
 
+    # set checked back to false for all remaining treena
+    for treena in treenas:
+        treena.checked = False
+
     # print for debug
     print('The following parts became isolated and were also removed:')
+    for treena in ttr:
+        print(treena)
+
+
+def part_type_change_mutation(treenome):
+    treenas = treenome.treenas
+    seed = treenome.get_seed()
+
+    # set checked to false for all treena
+    # this will be used later to tell which parts are still connected
+    for treena in treenas:
+        treena.checked = False
+
+    # with some low probability change the type of some of the treena
+    # this will very likely cause sections of the tree to become isolated
+    # if a section is isolated, the entire isolated section will be removed
+    # so a type change mutation could cause a large portion of the tree to mutate away
+    # also, the part that gets changed will likely not be growable anymore
+    # think trunk at the top of the tree becomes a root
+    # this will get removed though because it will be considered isolated when walking the treenome
+    # because it will not be a growable neighbor
+    print('Part type change mutation for the following parts:')
+    for treena in treenas:
+        # don't allow the seed to be changed
+        if treena.part_type == TreePartType.SEED:
+            continue
+
+        # low probability of changing a treena
+        if random.random() < 0.01:
+            print(f'{treena} will become...')
+            treena.part_type = treenome_util.get_random_treena_type()
+            print(treena)
+
+    # walk the treenome from the seed to see which parts are still connected and which are now isolated
+    # treena.checked will be set True for all parts that are reachable
+    treenome_util.walk_treenome(seed, treenas)
+
+    # add all the treena with checked False to the removal list
+    # ttr = TreeNA To Remove
+    ttr = []
+    for treena in treenas:
+        if not treena.checked:
+            ttr.append(treena)
+
+    # do the actual removal
+    for treena in ttr:
+        treenas.remove(treena)
+
+    # set checked back to false for all remaining treena
+    for treena in treenas:
+        treena.checked = False
+
+    # print for debug
+    print('The following parts became isolated and were removed:')
     for treena in ttr:
         print(treena)

@@ -1,3 +1,5 @@
+import random
+
 import util
 from trees.tree_part import TreePartType, TreePart
 from trees.treenome.treena import TreeNA
@@ -138,3 +140,7 @@ def walk_treenome(treena, treenas):
         if not reachable_treena.checked:
             walk_treenome(reachable_treena, treenas)
 
+
+def get_random_treena_type():
+    part_types = [p.value for p in TreePartType]
+    return TreePartType(part_types[random.randrange(0, len(part_types))])
