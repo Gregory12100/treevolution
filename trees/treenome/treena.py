@@ -16,6 +16,9 @@ class TreeNA:
         # keeps track of when in the growth sequence this part is grown
         self.grow_number = -1
 
+        # flag used for recursive treenome continuity algoritm
+        self.checked = False
+
     # shortcut method to get x coordinate of the treena
     def get_x(self):
         return self.xy.x

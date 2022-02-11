@@ -127,3 +127,14 @@ def filter_non_growable_neighbors(treena: TreeNA, neighbors: list[TreeNA]) -> li
 def create_tree_part_from_treena(treena: TreeNA) -> TreePart:
     return TreePart(treena.part_type, treena.get_x(), treena.build_y)
 
+
+# walk the treenome recursively starting from the input treena
+# sets treena.checked to True for each treena that is reachable
+# all treena with checked = False are isolated and can't be grown
+def walk_treenome(treena, treenas):
+    treena.checked = True
+    reachable_treenas = filter_non_growable_neighbors(treena, get_neighbors(treena, treenas))
+    for reachable_treena in reachable_treenas:
+        if not reachable_treena.checked:
+            walk_treenome(reachable_treena, treenas)
+

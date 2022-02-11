@@ -7,17 +7,21 @@ from trees.treenome.mutations import PossibleAdditiveMutation
 from trees.treenome.treena import TreeNA
 
 
-# this currently only handles additive mutations
-# TODO: subtractive mutations
-# TODO: part type change mutations
-# both of the above could cause parts to become isolated
-# so that will have to be checked for
 def mutate_treenome(treenome):
+    # subtractive mutations
+    subtractive_mutation(treenome)
+
+    # additive mutations
+    additive_mutation(treenome)
+
+    # TODO: part type change mutation
+
+
+def additive_mutation(treenome):
+    # TODO: limit how high leaves and branches can be added
+
     # get treenas
     treenas = treenome.treenas
-
-    # TODO: limit how high leaves and branches can be added
-    max_trunk_height = treenome.get_full_trunk_height()
 
     # a list to keep track of all the possible additive mutations (PAMs)
     pams = []
@@ -118,4 +122,54 @@ def find_growable_mutations(treenome, treena, direction):
     return pams
 
 
+def subtractive_mutation(treenome):
+    treenas = treenome.treenas
+    seed = treenome.get_seed()
 
+    # set checked to false for all treena
+    # this will be used later to tell which parts are still connected
+    for treena in treenas:
+        treena.checked = False
+
+    # with some low probability get rid of the some of the treena
+    # this will very likely cause sections of the tree to become isolated
+    # if a section is isolated, the entire isolated section will be removed as well
+    # so a single subtractive mutation could cause a large portion of the tree to mutate away
+    # ttr = TreeNA To Remove
+    ttr = []
+    for treena in treenas:
+        # don't allow the seed to be removed
+        if treena.part_type == TreePartType.SEED:
+            continue
+
+        # low probability of removing a treena
+        if random.random() < 0.01:
+            ttr.append(treena)
+
+    # do the actual removal
+    for treena in ttr:
+        treenas.remove(treena)
+
+    # print for debug
+    print('Subtractive mutation for the following parts:')
+    for treena in ttr:
+        print(treena)
+
+    # walk the treenome from the seed to see which parts are still connected and which are now isolated
+    # treena.checked will be set True for all parts that are reachable
+    treenome_util.walk_treenome(seed, treenas)
+
+    # add all the treena with checked False to the removal list
+    ttr = []
+    for treena in treenas:
+        if not treena.checked:
+            ttr.append(treena)
+
+    # do the actual removal
+    for treena in ttr:
+        treenas.remove(treena)
+
+    # print for debug
+    print('The following parts became isolated and were also removed:')
+    for treena in ttr:
+        print(treena)

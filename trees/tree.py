@@ -1,11 +1,11 @@
+from grid.grid_point import GridPoint
 from trees.tree_part import TreePartType
 
 
 class Tree:
     def __init__(self, treenome, x, y, sun):
         self.treenome = treenome
-        self.x = x
-        self.y = y
+        self.xy = GridPoint(x, y)
         self.sun = sun
 
         self.parts = list()
@@ -14,6 +14,57 @@ class Tree:
     def draw(self, grid_surface):
         for part in self.parts:
             part.draw(grid_surface)
+
+    # shortcut method to get x coordinate of the tree
+    def get_x(self):
+        return self.xy.x
+
+    # shortcut method to get y coordinate of the tree
+    def get_y(self):
+        return self.xy.y
+
+    def get_full_size(self):
+        return self.treenome.get_size()
+
+    def get_size(self):
+        return len(self.parts)
+
+    def is_full_grown(self):
+        return self.get_size() == self.get_full_size()
+
+    def get_height_above_seed(self):
+        max_y = 0
+        for part in self.parts:
+            if part.get_y() > max_y:
+                max_y = part.get_y()
+        return max_y - self.get_y()
+
+    def get_depth_below_seed(self):
+        min_y = 0
+        for part in self.parts:
+            if part.get_y() < min_y:
+                min_y = part.get_y()
+        return self.get_y() - min_y
+
+    def get_height(self):
+        self.get_height_above_seed() + self.get_depth_below_seed()
+
+    def get_width_left(self):
+        min_x = 0
+        for part in self.parts:
+            if part.get_x() < min_x:
+                min_x = part.get_x()
+        return self.get_x() - min_x
+
+    def get_width_right(self):
+        max_x = 0
+        for part in self.parts:
+            if part.get_x() > max_x:
+                max_x = part.get_x()
+        return max_x - self.get_x()
+
+    def get_width(self):
+        return self.get_width_left() + self.get_width_right()
 
     def obtain_energy(self, amount):
         self.energy += amount
@@ -31,7 +82,7 @@ class Tree:
                 return
 
             # translate the next growth so that its lined up with the tree
-            next_growth.translate(self.x, self.y)
+            next_growth.translate(self.get_x(), self.get_y())
             # tell it that its now part of this tree
             next_growth.parent_tree = self
             # add it to the tree parts for this tree
@@ -48,4 +99,8 @@ class Tree:
 
             # subtract the energy used to build the part
             self.energy -= 1000
+
+    # FIXME: this is a not a very good scoring calculation
+    def get_score(self):
+        return self.energy/1000 + len(self.parts)
 
