@@ -18,7 +18,8 @@ while running:
             running = False
 
     # update everything
-    sim.update()
+    dt = clock.get_time()
+    sim.update(dt)
 
     # paint the background
     screen.fill(config.COLOR_BACKGROUND)

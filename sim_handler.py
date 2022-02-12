@@ -1,13 +1,13 @@
 import config
 from environment.dirt import Dirt
 from environment.sun import Sun
-from trees.tree import Tree
-from trees.treenome.treenome import Treenome
+from trees.generation import Generation
+from util.timer import Timer
 
 
 def init_ground():
     dirt_list = []
-    for y in range(0, 10):
+    for y in range(0, config.GROUND_DEPTH):
         for x in range(0, int(config.GRID_SIZE_X)):
             dirt_list.append(Dirt(x, y))
     return dirt_list
@@ -18,20 +18,29 @@ class SimHandler:
         self.ground = init_ground()
         self.sun = Sun()
 
-        self.trees = []
-        self.trees.append(Tree(Treenome('resources/treena_test.csv'), 32, 9, self.sun))
-        self.trees.append(Tree(Treenome('resources/treena_test.csv'), 64, 9, self.sun))
-        self.trees.append(Tree(Treenome('resources/treena_test.csv'), 98, 9, self.sun))
-        self.trees.append(Tree(Treenome('resources/treena_test.csv'), 130, 9, self.sun))
+        # create the timer that will control when a generation ends and the next one starts
+        self.timer = Timer()
+        self.timer.start(config.GENERATION_TIME)
 
-    def update(self):
+        self.generation = Generation(1, 'resources/treena_test.csv', self.sun)
+        self.generation_count = 0
+
+    def update(self, dt):
+        self.timer.update(dt)
+        if self.timer.is_time_up():
+            # start a new generation
+            print("Start a new generation")
+            filepath = f'resources/runs/best_from_gen_{self.generation_count}.csv'
+            self.generation.get_best().treenome.write_to_file(filepath)
+            self.generation = Generation(1, filepath, self.sun)
+            self.generation_count += 1
+            self.timer.start(config.GENERATION_TIME)
+
         self.sun.shine()
-        for tree in self.trees:
-            tree.grow()
+        self.generation.update()
 
     def draw(self, grid_surface):
         for dirt in self.ground:
             dirt.draw(grid_surface)
 
-        for tree in self.trees:
-            tree.draw(grid_surface)
+        self.generation.draw(grid_surface)

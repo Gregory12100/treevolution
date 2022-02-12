@@ -1,6 +1,6 @@
 import random
 
-import util
+from util import util
 from trees.tree_part import TreePartType, TreePart
 from trees.treenome.treena import TreeNA
 

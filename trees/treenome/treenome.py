@@ -5,13 +5,16 @@ from trees.treenome import treenome_util, growth_sequencer, mutator
 class Treenome:
     def __init__(self, filepath):
         self.treenas = treenome_util.load_treena_from_csv(filepath)
+        self.current_growth_number = 0
 
-        # mutation
+    def mutate(self):
         mutator.mutate_treenome(self)
 
-        # growth sequence
+    def determine_growth_sequence(self):
         growth_sequencer.determine_growth_sequence(self)
-        self.current_growth_number = 0
+
+    def write_to_file(self, filepath):
+        treenome_util.write_treena_to_csv(filepath, self.treenas)
 
     def get_seed(self):
         for treena in self.treenas:
