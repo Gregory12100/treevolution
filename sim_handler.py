@@ -22,30 +22,36 @@ class SimHandler:
         self.timer = Timer()
         self.timer.start(config.GENERATION_TIME)
 
-        self.generation = Generation(config.GENERATION_SIZE, 'resources/treena_test.csv', self.sun)
-        self.generation_count = 0
+        self.gen_number = 0
+        start_gene_pool = ['resources/treena_test.csv']
+        self.generation = Generation(self.gen_number, config.GENERATION_SIZE, start_gene_pool, self.sun)
 
     def update(self, dt):
         self.timer.update(dt)
         if self.timer.is_time_up():
             # start a new generation
             print("Start a new generation")
+            self.generation.save()
+            gene_pool = self.generation.get_gene_pool()
+
             self.sun = Sun()
-            filepath = f'resources/runs/best_from_gen_{self.generation_count}.csv'
-            self.generation.get_best().treenome.write_to_file(filepath)
-            self.generation = Generation(config.GENERATION_SIZE, filepath, self.sun)
-            self.generation_count += 1
+            self.gen_number += 1
+            self.generation = Generation(self.gen_number, config.GENERATION_SIZE, gene_pool, self.sun)
             self.timer.start(config.GENERATION_TIME)
 
         self.sun.shine()
         self.generation.update()
 
     def draw(self, screen, fonts):
+        # FIXME: just noting that this is a terribly inefficient way to do the ground
+        # could just be one big ugly brown rectangle
+        # unless I go forward with the plan to make each piece of dirt have some resource for the trees
         for dirt in self.ground:
             dirt.draw(screen)
 
         self.generation.draw(screen)
 
+        # draw some text on the screen
         screen.blit(fonts['title'].render('Treevolution', False, (0, 0, 0)), (10, 0))
-        screen.blit(fonts['info'].render(f'generation: {self.generation_count}', False, (0, 0, 0)), (10, 40))
+        screen.blit(fonts['info'].render(f'generation: {self.gen_number}', False, (0, 0, 0)), (10, 40))
         screen.blit(fonts['info'].render(f'time to next: {int(self.timer.remaining_time)}', False, (0, 0, 0)), (10, 58))

@@ -93,9 +93,9 @@ def determine_growth_sequence(treenome):
     treenas.sort(key=lambda p: p.grow_number)
 
     # print the resulting growth sequence for debugging
-    print("Here is the growth sequence")
-    for treena in treenas:
-        print(f'{treena.grow_number}: {treena}')
+    # print("Here is the growth sequence")
+    # for treena in treenas:
+    #     print(f'{treena.grow_number}: {treena}')
 
 
 # determine if a treeNA is currently underground

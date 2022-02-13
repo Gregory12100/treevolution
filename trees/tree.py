@@ -3,7 +3,8 @@ from trees.tree_part import TreePartType
 
 
 class Tree:
-    def __init__(self, treenome, x, y, sun):
+    def __init__(self, id, treenome, x, y, sun):
+        self.id = id
         self.treenome = treenome
         self.xy = GridPoint(x, y)
         self.sun = sun
@@ -111,5 +112,5 @@ class Tree:
     # TODO: try scoring based mostly around the number of fruits the tree grows
     def get_score(self):
         # return self.energy/1000 + len(self.parts) + self.get_num_fruits()*10
-        return self.get_num_fruits()
+        return self.get_num_fruits() #* self.get_height_above_seed()
 
