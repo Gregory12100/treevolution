@@ -22,7 +22,7 @@ class SimHandler:
         self.timer = Timer()
         self.timer.start(config.GENERATION_TIME)
 
-        self.generation = Generation(1, 'resources/treena_test.csv', self.sun)
+        self.generation = Generation(config.GENERATION_SIZE, 'resources/treena_test.csv', self.sun)
         self.generation_count = 0
 
     def update(self, dt):
@@ -30,9 +30,10 @@ class SimHandler:
         if self.timer.is_time_up():
             # start a new generation
             print("Start a new generation")
+            self.sun = Sun()
             filepath = f'resources/runs/best_from_gen_{self.generation_count}.csv'
             self.generation.get_best().treenome.write_to_file(filepath)
-            self.generation = Generation(1, filepath, self.sun)
+            self.generation = Generation(config.GENERATION_SIZE, filepath, self.sun)
             self.generation_count += 1
             self.timer.start(config.GENERATION_TIME)
 

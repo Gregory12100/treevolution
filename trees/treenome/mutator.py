@@ -14,8 +14,9 @@ def mutate_treenome(treenome):
     # additive mutations
     additive_mutation(treenome)
 
+    # FIXME: this type of mutation is causing an issue where some parts don't get a growth number assigned
     # part type change mutation
-    part_type_change_mutation(treenome)
+    # part_type_change_mutation(treenome)
 
 
 def additive_mutation(treenome):

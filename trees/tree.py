@@ -66,6 +66,13 @@ class Tree:
     def get_width(self):
         return self.get_width_left() + self.get_width_right()
 
+    def get_num_fruits(self):
+        count = 0
+        for part in self.parts:
+            if part.part_type == TreePartType.FRUIT:
+                count += 1
+        return count
+
     def obtain_energy(self, amount):
         self.energy += amount
 
@@ -101,6 +108,8 @@ class Tree:
             self.energy -= 1000
 
     # FIXME: this is a not a very good scoring calculation
+    # TODO: try scoring based mostly around the number of fruits the tree grows
     def get_score(self):
-        return self.energy/1000 + len(self.parts)
+        # return self.energy/1000 + len(self.parts) + self.get_num_fruits()*10
+        return self.get_num_fruits()
 

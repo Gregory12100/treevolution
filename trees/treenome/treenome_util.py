@@ -35,6 +35,18 @@ def check_treenome_validity(treenome):
     if seed.get_x() != 0 or seed.get_y() != 0:
         return False
 
+    # set all treena checked to false so that we can walk the treenome from the seed
+    # and determine if all treena are connected and growable
+    for treena in treenome.treenas:
+        treena.checked = False
+
+    walk_treenome(seed, treenome.treenas)
+
+    for treena in treenome.treenas:
+        if not treena.checked:
+            print(f'ERROR: ISOLATED TREENA: {treena}')
+            return False
+
     return True
 
 
