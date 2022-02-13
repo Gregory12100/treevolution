@@ -40,8 +40,12 @@ class SimHandler:
         self.sun.shine()
         self.generation.update()
 
-    def draw(self, grid_surface):
+    def draw(self, screen, fonts):
         for dirt in self.ground:
-            dirt.draw(grid_surface)
+            dirt.draw(screen)
 
-        self.generation.draw(grid_surface)
+        self.generation.draw(screen)
+
+        screen.blit(fonts['title'].render('Treevolution', False, (0, 0, 0)), (10, 0))
+        screen.blit(fonts['info'].render(f'generation: {self.generation_count}', False, (0, 0, 0)), (10, 40))
+        screen.blit(fonts['info'].render(f'time to next: {int(self.timer.remaining_time)}', False, (0, 0, 0)), (10, 58))
