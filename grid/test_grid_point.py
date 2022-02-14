@@ -1,5 +1,6 @@
 import unittest
 
+from grid.direction import Direction
 from grid.grid_point import GridPoint
 
 
@@ -79,3 +80,20 @@ class TestGridPoint(unittest.TestCase):
         xy1 = GridPoint(1, 2)
         xy2 = GridPoint(1, 2)
         self.assertFalse(xy1.is_adjacent(xy2))
+
+    def test_get_direction(self):
+        xy1 = GridPoint(1, 1)
+        xy2 = GridPoint(1, 2)
+        self.assertEqual(Direction.UP, xy1.get_direction(xy2))
+
+        xy1 = GridPoint(1, 1)
+        xy2 = GridPoint(1, 0)
+        self.assertEqual(Direction.DOWN, xy1.get_direction(xy2))
+
+        xy1 = GridPoint(1, 1)
+        xy2 = GridPoint(0, 1)
+        self.assertEqual(Direction.LEFT, xy1.get_direction(xy2))
+
+        xy1 = GridPoint(1, 1)
+        xy2 = GridPoint(2, 1)
+        self.assertEqual(Direction.RIGHT, xy1.get_direction(xy2))

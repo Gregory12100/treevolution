@@ -24,18 +24,22 @@ class SimHandler:
 
         self.gen_number = 0
         start_gene_pool = ['resources/treena_test.csv']
+        print(f"Start generation {self.gen_number}")
         self.generation = Generation(self.gen_number, config.GENERATION_SIZE, start_gene_pool, self.sun)
 
     def update(self, dt):
         self.timer.update(dt)
         if self.timer.is_time_up():
             # start a new generation
-            print("Start a new generation")
             self.generation.save()
             gene_pool = self.generation.get_gene_pool()
 
+            best_tree = self.generation.get_best()
+            print(f'-best tree had score of {best_tree.get_score()}')
+
             self.sun = Sun()
             self.gen_number += 1
+            print(f"Start generation {self.gen_number}")
             self.generation = Generation(self.gen_number, config.GENERATION_SIZE, gene_pool, self.sun)
             self.timer.start(config.GENERATION_TIME)
 

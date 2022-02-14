@@ -96,30 +96,9 @@ def find_growable_mutations(treenome, treena, direction):
         return pams
 
     # depending on the direction and types involved, we can have an additive mutation
-    match treena.part_type:
-        case TreePartType.SEED:
-            match direction:
-                case Direction.UP:
-                    pams.append(PossibleAdditiveMutation(TreePartType.LEAF, mutation_point.x, mutation_point.y))
-                    pams.append(PossibleAdditiveMutation(TreePartType.TRUNK, mutation_point.x, mutation_point.y))
-                case Direction.DOWN:
-                    pams.append(PossibleAdditiveMutation(TreePartType.ROOT, mutation_point.x, mutation_point.y))
-        case TreePartType.TRUNK:
-            match direction:
-                case Direction.UP:
-                    pams.append(PossibleAdditiveMutation(TreePartType.TRUNK, mutation_point.x, mutation_point.y))
-                case Direction.LEFT | Direction.RIGHT:
-                    pams.append(PossibleAdditiveMutation(TreePartType.LEAF, mutation_point.x, mutation_point.y))
-                    pams.append(PossibleAdditiveMutation(TreePartType.BRANCH, mutation_point.x, mutation_point.y))
-        case TreePartType.ROOT:
-            match direction:
-                case Direction.DOWN | Direction.LEFT | Direction.RIGHT:
-                    pams.append(PossibleAdditiveMutation(TreePartType.ROOT, mutation_point.x, mutation_point.y))
-        case TreePartType.BRANCH:
-            pams.append(PossibleAdditiveMutation(TreePartType.LEAF, mutation_point.x, mutation_point.y))
-            pams.append(PossibleAdditiveMutation(TreePartType.BRANCH, mutation_point.x, mutation_point.y))
-            if direction == Direction.DOWN:
-                pams.append(PossibleAdditiveMutation(TreePartType.FRUIT, mutation_point.x, mutation_point.y))
+    growable_types = treenome_util.get_growable_types(treena, direction)
+    for growable_type in growable_types:
+        pams.append(PossibleAdditiveMutation(growable_type, mutation_point.x, mutation_point.y))
 
     return pams
 

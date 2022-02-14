@@ -65,3 +65,18 @@ class GridPoint:
                 return self.translate_new(-1, 0)
             case Direction.RIGHT:
                 return self.translate_new(1, 0)
+
+    # returns LEFT, RIGHT, UP, or DOWN depending on what direction the other grid point is mostly in
+    def get_direction(self, other_xy):
+        dx = other_xy.x - self.x
+        dy = other_xy.y - self.y
+        if abs(dx) > abs(dy):
+            if dx > 0:
+                return Direction.RIGHT
+            else:
+                return Direction.LEFT
+        else:
+            if dy > 0:
+                return Direction.UP
+            else:
+                return Direction.DOWN

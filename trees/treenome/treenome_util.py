@@ -1,5 +1,6 @@
 import random
 
+from grid.direction import Direction
 from util import util
 from trees.tree_part import TreePartType, TreePart
 from trees.treenome.treena import TreeNA
@@ -60,17 +61,20 @@ def is_space_occupied(treenome, xy):
 
 # Finds the neighboring treena of a given treena
 # Neighbors are immediately adjacent in the grid
-def get_neighbors(treena: TreeNA, treenas: list[TreeNA]) -> list[TreeNA]:
+def get_growable_neighbors(treena: TreeNA, treenas: list[TreeNA]) -> list[TreeNA]:
     neighbors = []
     for other_treena in treenas:
         if treena.xy.is_adjacent(other_treena.xy):
-            neighbors.append(other_treena)
+            if other_treena.grow_number == -1:
+                if other_treena.part_type in get_growable_types(treena, treena.xy.get_direction(other_treena.xy)):
+                    neighbors.append(other_treena)
     return neighbors
 
 
 # Trunks get their own special neighbor finding method because of how they grow
 # Trunks grow by getting inserted from the top of the seed while increasing the height of the branches and leaves
-def get_neighbors_for_trunk(trunk: TreeNA, treenas: list[TreeNA], current_trunk_height: int, max_trunk_height: int) -> list[TreeNA]:
+# this also filters out the non-growable neighbors to leave only the growable ones
+def get_growable_neighbors_for_trunk(trunk: TreeNA, treenas: list[TreeNA], current_trunk_height: int, max_trunk_height: int) -> list[TreeNA]:
     trunk_mod_xy = trunk.xy.translate_new(0, max_trunk_height - current_trunk_height - trunk.get_y() + 1)
 
     neighbors = []
@@ -78,61 +82,16 @@ def get_neighbors_for_trunk(trunk: TreeNA, treenas: list[TreeNA], current_trunk_
         # determine if other is horizontally adjacent at the appropriate trunk height
         # grabs branches and leaves that are out to the sides of the trunk
         if trunk_mod_xy.is_horizontal_adjacent(other_treena.xy):
-            neighbors.append(other_treena)
+            if other_treena.grow_number == -1:
+                if other_treena.part_type in get_growable_types(trunk, trunk_mod_xy.get_direction(other_treena.xy)):
+                    neighbors.append(other_treena)
 
         # determine if other is vertically adjacent at unmodified height
         # basically just grabs the below and above trunks
         if trunk.xy.is_vertical_adjacent(other_treena.xy):
-            neighbors.append(other_treena)
-
-    return neighbors
-
-
-# Filters the list of neighbors down based on if that neighbor is growable from the input treeNA
-# A neighbor is growable if it hasn't already been grown and,
-# input treeNA is seed or,
-# input treeNA is trunk and neighbor is trunk branch or leaf or,
-# input treeNA is root and neighbor is root (root only grows root) or,
-# input treeNA is branch and neighbor is branch or leaf,
-# input treeNA is not leaf (leaf can't grow anything else from it)
-# input treeNA is not fruit (fruit can't grow anything else from it)
-def filter_non_growable_neighbors(treena: TreeNA, neighbors: list[TreeNA]) -> list[TreeNA]:
-    # leaf and fruit cannot grow anything, return empty list
-    match treena.part_type:
-        case TreePartType.LEAF | TreePartType.FRUIT:
-            return []
-
-    # check if neighbor has previously been added to the grow sequence
-    # if its already been added, then its no longer growable
-    neighbors[:] = [p for p in neighbors if p.grow_number == -1]
-
-    # seed can grow all types
-    match treena.part_type:
-        case TreePartType.SEED:
-            return neighbors
-
-    # root can only grow root
-    # trunk can grow trunk, branch, and leaf
-    # branch can grow branch, leaf, and fruit
-    # TODO: should we be checking the direction of the neighbor from treena as well?
-    neighbors_to_remove = []
-    for neighbor in neighbors:
-        match treena.part_type:
-            case TreePartType.TRUNK:
-                match neighbor.part_type:
-                    case TreePartType.SEED | TreePartType.ROOT:
-                        neighbors_to_remove.append(neighbor)
-            case TreePartType.ROOT:
-                if neighbor.part_type != TreePartType.ROOT:
-                    neighbors_to_remove.append(neighbor)
-            case TreePartType.BRANCH:
-                match neighbor.part_type:
-                    case TreePartType.SEED | TreePartType.ROOT | TreePartType.TRUNK:
-                        neighbors_to_remove.append(neighbor)
-
-    # do the actual removing
-    for neighbor in neighbors_to_remove:
-        neighbors.remove(neighbor)
+            if other_treena.grow_number == -1:
+                if other_treena.part_type in get_growable_types(trunk, trunk.xy.get_direction(other_treena.xy)):
+                    neighbors.append(other_treena)
 
     return neighbors
 
@@ -147,7 +106,7 @@ def create_tree_part_from_treena(treena: TreeNA) -> TreePart:
 # all treena with checked = False are isolated and can't be grown
 def walk_treenome(treena, treenas):
     treena.checked = True
-    reachable_treenas = filter_non_growable_neighbors(treena, get_neighbors(treena, treenas))
+    reachable_treenas = get_growable_neighbors(treena, treenas)
     for reachable_treena in reachable_treenas:
         if not reachable_treena.checked:
             walk_treenome(reachable_treena, treenas)
@@ -156,3 +115,33 @@ def walk_treenome(treena, treenas):
 def get_random_treena_type():
     part_types = [p.value for p in TreePartType]
     return TreePartType(part_types[random.randrange(0, len(part_types))])
+
+
+# this is the set of rules that determines what can grow what in what directions
+def get_growable_types(treena, direction):
+    growable_types = []
+    match treena.part_type:
+        case TreePartType.SEED:
+            match direction:
+                case Direction.UP:
+                    growable_types.append(TreePartType.LEAF)
+                    growable_types.append(TreePartType.TRUNK)
+                case Direction.DOWN:
+                    growable_types.append(TreePartType.ROOT)
+        case TreePartType.TRUNK:
+            match direction:
+                case Direction.UP:
+                    growable_types.append(TreePartType.TRUNK)
+                case Direction.LEFT | Direction.RIGHT:
+                    growable_types.append(TreePartType.LEAF)
+                    growable_types.append(TreePartType.BRANCH)
+        case TreePartType.ROOT:
+            match direction:
+                case Direction.DOWN | Direction.LEFT | Direction.RIGHT:
+                    growable_types.append(TreePartType.ROOT)
+        case TreePartType.BRANCH:
+            growable_types.append(TreePartType.LEAF)
+            growable_types.append(TreePartType.BRANCH)
+            if direction == Direction.DOWN:
+                growable_types.append(TreePartType.FRUIT)
+    return growable_types

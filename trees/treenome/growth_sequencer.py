@@ -18,7 +18,7 @@ def determine_growth_sequence(treenome):
     treenas = treenome.treenas
 
     # list to keep track of the possible growths, start with the seed
-    possible_growths = treenome_util.filter_non_growable_neighbors(seed, treenome_util.get_neighbors(seed, treenas))
+    possible_growths = treenome_util.get_growable_neighbors(seed, treenas)
 
     # list to keep track of possible growths that are currently underground
     # due to the trunk not being tall enough yet
@@ -63,11 +63,10 @@ def determine_growth_sequence(treenome):
         # add any new possible growths that are attached to next_growth
         neighbors = []
         if next_growth.part_type == TreePartType.TRUNK:
-            neighbors = treenome_util.get_neighbors_for_trunk(next_growth, treenas, trunk_height, max_trunk_height)
+            neighbors = treenome_util.get_growable_neighbors_for_trunk(next_growth, treenas, trunk_height, max_trunk_height)
         else:
-            neighbors = treenome_util.get_neighbors(next_growth, treenas)
-        # filter out the neighbors that can't be grown based on type
-        neighbors = treenome_util.filter_non_growable_neighbors(next_growth, neighbors)
+            neighbors = treenome_util.get_growable_neighbors(next_growth, treenas)
+
         # place any growable neighbors that are currently underground in the possible growth underground list
         # this only applies to leaves, branches, and fruits
         for neighbor in neighbors:
