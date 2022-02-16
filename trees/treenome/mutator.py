@@ -15,12 +15,14 @@ def mutate_treenome(treenome):
     additive_mutation(treenome)
 
     # FIXME: this type of mutation is causing an issue where some parts don't get a growth number assigned
+    # also, this type of mutation isn't really needed since its just a shortcut for subtract then add different type
     # part type change mutation
     # part_type_change_mutation(treenome)
 
 
 def additive_mutation(treenome):
     # TODO: limit how high leaves and branches can be added
+    # FIXME: mutations can get added underground that aren't supposed to be!
 
     # get treenas
     treenas = treenome.treenas
@@ -98,7 +100,15 @@ def find_growable_mutations(treenome, treena, direction):
     # depending on the direction and types involved, we can have an additive mutation
     growable_types = treenome_util.get_growable_types(treena, direction)
     for growable_type in growable_types:
-        pams.append(PossibleAdditiveMutation(growable_type, mutation_point.x, mutation_point.y))
+        # branches, leaves, trunks, fruits must be above the seed
+        # roots must be below
+        match growable_type:
+            case TreePartType.TRUNK | TreePartType.BRANCH | TreePartType.LEAF | TreePartType.FRUIT:
+                if mutation_point.y > treenome.get_seed().get_y():
+                    pams.append(PossibleAdditiveMutation(growable_type, mutation_point.x, mutation_point.y))
+            case TreePartType.ROOT:
+                if mutation_point.y < treenome.get_seed().get_y():
+                    pams.append(PossibleAdditiveMutation(growable_type, mutation_point.x, mutation_point.y))
 
     return pams
 

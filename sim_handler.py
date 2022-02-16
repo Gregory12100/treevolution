@@ -23,7 +23,7 @@ class SimHandler:
         self.timer.start(config.GENERATION_TIME)
 
         self.gen_number = 0
-        start_gene_pool = ['resources/treena_test.csv']
+        start_gene_pool = ['resources/treenome_starter1.csv']
         print(f"Start generation {self.gen_number}")
         self.generation = Generation(self.gen_number, config.GENERATION_SIZE, start_gene_pool, self.sun)
 
