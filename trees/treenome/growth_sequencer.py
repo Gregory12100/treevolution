@@ -5,6 +5,30 @@ from trees.treenome import treenome_util
 from trees.treenome.treena import TreeNA
 
 
+def inheritable_growth_sequencer(treenome):
+    # run the normal growth sequencer for the first gen
+    # keep track of whether the next growth added to the sequence was dependent on the last
+    # its dependent on the last if it gets added to possible growths after next growth is selected
+    # two routes, it could be one of the underground parts that got added to possible list
+    # or it could be a neighbor that got added
+    # if it was not dependant, then it can probably be swapped ordering with the last with no consequence
+    # how to handle mutation
+    # additive case
+    # see when the part first becomes available in the sequencer and just add it there
+    # or give it some probability of being added at each step after its available...
+    # subtractive case
+    # could wipe out large portion of the growth sequence
+    # redo sequence from that point with preference to the previous ordering with parts that still exist?
+    # first step is to get this working without mutation
+
+    # keep same growth sequence as the last time
+    # but as mutations become growable, have some probability of inserting them
+    # after new sequence is complete, then mutate the sequence with the above idea
+    pass
+
+
+
+
 def determine_growth_sequence(treenome):
     grow_number = 0
     trunk_height = 0

@@ -112,6 +112,6 @@ class Tree:
     # TODO: try scoring based mostly around the number of fruits the tree grows
     def get_score(self):
         # return self.energy/1000 + len(self.parts) + self.get_num_fruits()*10
-        # return self.get_num_fruits() #* self.get_height_above_seed()
-        return self.get_height_above_seed()
+        return (self.get_num_fruits() + 1) * self.get_height_above_seed()
+        # return self.get_height_above_seed()
 

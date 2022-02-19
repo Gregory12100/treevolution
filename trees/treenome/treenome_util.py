@@ -17,7 +17,7 @@ def load_treena_from_csv(filepath):
 def write_treena_to_csv(filepath, treenas):
     rows = []
     for treena in treenas:
-        row = [treena.part_type.value, treena.get_x(), treena.get_y()]
+        row = [treena.part_type.value, treena.get_x(), treena.get_y(), treena.grow_number]
         rows.append(row)
     util.write_csv(filepath, rows)
 
