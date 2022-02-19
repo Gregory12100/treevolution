@@ -10,13 +10,13 @@ def load_treena_from_csv(filepath):
     rows = util.read_csv(filepath)
     treenas = []
     for row in rows:
-        treenas.append(TreeNA(TreePartType(row[0]), int(row[1]), int(row[2])))
+        treenas.append(TreeNA(TreePartType(row[0]), int(row[1]), int(row[2]), int(row[3])))
     return treenas
 
 
-def write_treena_to_csv(filepath, treenas):
+def write_treena_to_csv(filepath, treenome):
     rows = []
-    for treena in treenas:
+    for treena in treenome.treenas:
         row = [treena.part_type.value, treena.get_x(), treena.get_y(), treena.grow_number]
         rows.append(row)
     util.write_csv(filepath, rows)
@@ -65,7 +65,7 @@ def get_growable_neighbors(treena: TreeNA, treenas: list[TreeNA]) -> list[TreeNA
     neighbors = []
     for other_treena in treenas:
         if treena.xy.is_adjacent(other_treena.xy):
-            if other_treena.grow_number == -1:
+            if not other_treena.grown:
                 if other_treena.part_type in get_growable_types(treena, treena.xy.get_direction(other_treena.xy)):
                     neighbors.append(other_treena)
     return neighbors
@@ -82,14 +82,14 @@ def get_growable_neighbors_for_trunk(trunk: TreeNA, treenas: list[TreeNA], curre
         # determine if other is horizontally adjacent at the appropriate trunk height
         # grabs branches and leaves that are out to the sides of the trunk
         if trunk_mod_xy.is_horizontal_adjacent(other_treena.xy):
-            if other_treena.grow_number == -1:
+            if not other_treena.grown:
                 if other_treena.part_type in get_growable_types(trunk, trunk_mod_xy.get_direction(other_treena.xy)):
                     neighbors.append(other_treena)
 
         # determine if other is vertically adjacent at unmodified height
         # basically just grabs the below and above trunks
         if trunk.xy.is_vertical_adjacent(other_treena.xy):
-            if other_treena.grow_number == -1:
+            if not other_treena.grown:
                 if other_treena.part_type in get_growable_types(trunk, trunk.xy.get_direction(other_treena.xy)):
                     neighbors.append(other_treena)
 

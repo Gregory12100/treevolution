@@ -9,7 +9,8 @@ class Treenome:
 
         self.mutate()
         treenome_util.check_treenome_validity(self)
-        self.determine_growth_sequence()
+        # self.determine_growth_sequence()
+        growth_sequencer.inheritable_growth_sequencer(self)
 
     def mutate(self):
         mutator.mutate_treenome(self)
@@ -18,7 +19,7 @@ class Treenome:
         growth_sequencer.determine_growth_sequence(self)
 
     def write_to_file(self, filepath):
-        treenome_util.write_treena_to_csv(filepath, self.treenas)
+        treenome_util.write_treena_to_csv(filepath, self)
 
     def get_seed(self):
         for treena in self.treenas:

@@ -24,9 +24,75 @@ def inheritable_growth_sequencer(treenome):
     # keep same growth sequence as the last time
     # but as mutations become growable, have some probability of inserting them
     # after new sequence is complete, then mutate the sequence with the above idea
-    pass
 
+    treenas = treenome.treenas
 
+    grow_number = 0
+    grow_number_offset = 0
+    trunk_height = 0
+    max_trunk_height = treenome.get_full_trunk_height()
+
+    # sort the treenas by grow number
+    treenas.sort(key=lambda p: p.grow_number)
+
+    print("In inheritable growth sequencer")
+    for treena in treenas:
+        print(treena)
+
+    # find all the treena that have just been added due to mutation
+    mads = []
+    for treena in treenas:
+        if treena.grow_number == -1:
+            mads.append(treena)
+
+    # a list to keep track of mutations that are possible to be inserted at each step
+    pams = []
+    pams_underground = []
+
+    # step through treenas in order of the pre-existing grow number
+    # at each step, make sure the next growth is still possible
+    # if it's not, throw it in a list and recheck on next step
+    # I think there are some subtractive mutation scenarios that could cause that
+    # then check if the additive mutations are possible yet
+    for treena in treenas:
+        if treena.grow_number == -1:
+            # skip since this is a mutation that was just added
+            continue
+
+        # assign the build y position this is needed because branches and leaves may be built lower down and then go
+        # up later to their final y as the trunk grows so we have to know where to put it at the time its built (or
+        # grown)
+        # in all other cases, build y is just the normal y
+        match treena.part_type:
+            case TreePartType.LEAF | TreePartType.BRANCH | TreePartType.FRUIT:
+                build_y = treena.get_y() - max_trunk_height + trunk_height
+                treena.build_y = build_y
+
+        # if we just grew a trunk, then the trunk height increases
+        if treena.part_type == TreePartType.TRUNK:
+            trunk_height += 1
+
+        # check if mutations are possible after growing this treena
+        # mutations are possible if they neighbor this treena (and are not underground)
+        # or if they have now just become no longer underground
+
+        print(f'Next growth is {treena}')
+        print(f'    build_y is {treena.build_y}')
+
+        neighbors = []
+        if treena.part_type == TreePartType.TRUNK:
+            neighbors = treenome_util.get_growable_neighbors_for_trunk(treena, treenas, trunk_height,
+                                                                       max_trunk_height)
+        else:
+            neighbors = treenome_util.get_growable_neighbors(treena, treenas)
+
+        print(f'    neighbors are:')
+        for neighbor in neighbors:
+            print(f'        {neighbor}')
+
+        for mad in mads:
+            if mad in neighbors:
+                print(f'        found neighbor mutation {mad}')
 
 
 def determine_growth_sequence(treenome):
@@ -57,6 +123,7 @@ def determine_growth_sequence(treenome):
         # TODO: also allow weighting to different growth directions - tree prefers up instead of out
         next_growth = possible_growths[random.randrange(0, len(possible_growths))]
         next_growth.grow_number = grow_number
+        next_growth.grown = True
         possible_growths.remove(next_growth)
         grow_number += 1
 
@@ -87,7 +154,8 @@ def determine_growth_sequence(treenome):
         # add any new possible growths that are attached to next_growth
         neighbors = []
         if next_growth.part_type == TreePartType.TRUNK:
-            neighbors = treenome_util.get_growable_neighbors_for_trunk(next_growth, treenas, trunk_height, max_trunk_height)
+            neighbors = treenome_util.get_growable_neighbors_for_trunk(next_growth, treenas, trunk_height,
+                                                                       max_trunk_height)
         else:
             neighbors = treenome_util.get_growable_neighbors(next_growth, treenas)
 

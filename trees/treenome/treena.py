@@ -3,7 +3,7 @@ from grid.grid_point import GridPoint
 
 class TreeNA:
     # Tree DNA -> TreeNA
-    def __init__(self, part_type, x, y):
+    def __init__(self, part_type, x, y, grow_number=-1):
         # position relative to seed (seed is 0, 0)
         self.xy = GridPoint(x, y)
 
@@ -14,7 +14,10 @@ class TreeNA:
         self.build_y = self.get_y()
 
         # keeps track of when in the growth sequence this part is grown
-        self.grow_number = -1
+        self.grow_number = grow_number
+
+        # flag used to keep track if this part is already added to the growth sequence
+        self.grown = False
 
         # flag used for recursive treenome continuity algoritm
         self.checked = False
@@ -29,4 +32,4 @@ class TreeNA:
 
     # get the treena represented as a string, used to save the treenome line by line as a csv
     def __str__(self):
-        return f'{self.part_type.value}, {self.xy.x}, {self.xy.y}'
+        return f'{self.part_type.value}, {self.xy.x}, {self.xy.y}, {self.grow_number}'
